@@ -1,0 +1,16 @@
+# Ignore VSCode project files
+*.code-workspace
+
+# Common OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Env files at root (if any)
+.env
