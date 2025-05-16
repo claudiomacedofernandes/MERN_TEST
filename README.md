@@ -56,3 +56,5 @@ Create a `.env` file in `/server` with:
 PORT=3001
 MONGODB_URI=mongodb://localhost:27017/photoapp
 JWT_SECRET=your_jwt_secret
+
+---
