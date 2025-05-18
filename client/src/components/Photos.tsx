@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-
-interface Photo {
-  id: string;
-  filename: string;
-  path: string;
-  userid: string;
-  username: string;
-  userrole: string;
-  uploadedAt: string;
-}
-
-const roleHierarchy = ['superadmin', 'admin', 'user', 'guest'];
+import { USER_ROLES } from './User';
+import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos';
 
 const Photos: React.FC = () => {
   const { userid, username, userrole, token } = useAuth();
@@ -24,10 +13,8 @@ const Photos: React.FC = () => {
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/api/photos', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setPhotos(res.data.photos);
+        const updatedPhotos = await getPhotos(token);
+        setPhotos(updatedPhotos);
       } catch (err) {
         setError('Failed to load photos');
       }
@@ -58,13 +45,9 @@ const Photos: React.FC = () => {
     }));
 
     try {
-      const res = await axios.post('http://localhost:3001/api/photos/upload', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setPhotos([res.data.photo, ...photos]);
+      const newPhoto = await putPhoto(token, formData);
+      if (newPhoto)
+        setPhotos([newPhoto, ...photos]);
       setFile(null);
       setError(null);
     } catch (err) {
@@ -76,11 +59,9 @@ const Photos: React.FC = () => {
   // Handle photo deletion
   const handleDelete = async (photoId: string) => {
     try {
-      await axios.delete(`http://localhost:3001/api/photos/${photoId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { userid }
-      });
-      setPhotos(photos.filter(photo => photo.id !== photoId));
+      const res = await deletePhoto(token, photoId, userid);
+      if (res)
+        setPhotos(photos.filter(photo => photo.id !== photoId));
       setError(null);
     } catch (err) {
       console.error(err);
@@ -89,11 +70,12 @@ const Photos: React.FC = () => {
   };
 
   // Determine if delete button should be enabled
+  // Server also checks if user can delete photo
   const canDeletePhoto = (photo: Photo) => {
     if (!userid || !userrole) return false;
     if (photo.username === username) return true; // Owner can delete
-    const userRoleIndex = roleHierarchy.indexOf(userrole);
-    const ownerRoleIndex = roleHierarchy.indexOf(photos.find(p => p.username === photo.username)?.userrole || 'user');
+    const userRoleIndex = USER_ROLES.indexOf(userrole);
+    const ownerRoleIndex = USER_ROLES.indexOf(photos.find(p => p.username === photo.username)?.userrole || 'user');
     return userRoleIndex < ownerRoleIndex; // Higher role (lower index) can delete
   };
 

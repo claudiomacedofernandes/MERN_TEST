@@ -3,6 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import Login from './Login';
 import Register from './Register';
 
+// The user roles by Hierarchy
+export const USER_ROLES = ['superadmin', 'admin', 'user', 'guest'];
+
 const User: React.FC = () => {
   const { userid, username, userrole, logout } = useAuth();
   const [tab, setTab] = useState<'login' | 'register'>('login');
