@@ -2,9 +2,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
   token: string | null;
+  userid: string | null;
   username: string | null;
-  role: string | null;
-  login: (token: string, username: string, role: string) => void;
+  userrole: string | null;
+  login: (token: string, userid: string, username: string, userrole: string) => void;
   logout: () => void;
 }
 
@@ -12,29 +13,34 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
-  const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
+  const [userid, setUserId] = useState<string | null>(localStorage.getItem('userid'));
+  const [username, setUserName] = useState<string | null>(localStorage.getItem('username'));
+  const [userrole, setUserRole] = useState<string | null>(localStorage.getItem('userrole'));
 
-  const login = (token: string, username: string, role: string) => {
-    localStorage.setItem('token', token);
+  const login = (usertoken: string, userid: string, username: string, userrole: string) => {
+    localStorage.setItem('token', usertoken);
+    localStorage.setItem('userid', userid);
     localStorage.setItem('username', username);
-    localStorage.setItem('role', role);
-    setToken(token);
-    setUsername(username);
-    setRole(role);
+    localStorage.setItem('userrole', userrole);
+    setToken(usertoken);
+    setUserId(userid);
+    setUserName(username);
+    setUserRole(userrole);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userid');
     localStorage.removeItem('username');
-    localStorage.removeItem('role');
+    localStorage.removeItem('userrole');
     setToken(null);
-    setUsername(null);
-    setRole(null);
+    setUserId(null);
+    setUserName(null);
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, username, role, login, logout }}>
+    <AuthContext.Provider value={{ token, userid, username, userrole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

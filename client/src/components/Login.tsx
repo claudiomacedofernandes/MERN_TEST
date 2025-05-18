@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { loginUser } from '../api/auth';
 
-interface LoginProps {
-    onLogin: (username: string, role: string) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC = () => {
     const { login } = useAuth();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [formusername, setFormUsername] = useState('');
+    const [formpassword, setFormPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,9 +13,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         setError(null);
 
         try {
-            const { token, role } = await loginUser({ username, password, role: "" });
-            login(token, username, role);
-            onLogin(username, role);
+            const { token, userid, username, userrole } = await loginUser({ username: formusername, password: formpassword });
+            login(token, userid, username, userrole);
         } catch (err) {
             setError('Invalid credentials');
         }
@@ -30,15 +25,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <input
                 type="text"
                 placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={formusername}
+                onChange={(e) => setFormUsername(e.target.value)}
                 required
             />
             <input
                 type="password"
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formpassword}
+                onChange={(e) => setFormPassword(e.target.value)}
                 required
             />
             <button type="submit">Login</button>

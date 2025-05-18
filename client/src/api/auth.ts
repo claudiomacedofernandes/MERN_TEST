@@ -3,16 +3,16 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3001/api/auth';
 
-interface AuthResponse {
+export interface AuthResponse {
   token: string;
+  userid: string;
   username: string;
-  role: string;
+  userrole: string;
 }
 
-interface AuthRequestForm {
+export interface AuthRequestForm {
   username: string;
   password: string;
-  role: string;
 }
 
 export const loginUser = async (formData: AuthRequestForm): Promise<AuthResponse> => {

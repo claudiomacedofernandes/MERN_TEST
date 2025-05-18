@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { registerUser } from '../api/auth';
 
-interface RegisterProps {
-    onRegister: (username: string, role: string) => void;
-}
-
-const Register: React.FC<RegisterProps> = ({ onRegister }) => {
+const Register: React.FC = () => {
     const { login } = useAuth();
     const [formData, setFormData] = useState({ username: '', password: '', role: 'user' });
 
@@ -17,9 +13,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const { token, username, role } = await registerUser(formData);
-            login(token, username, role);
-            onRegister(username, role);
+            const { token, userid, username, userrole } = await registerUser(formData);
+            login(token, userid, username, userrole);
         } catch (err) {
             console.error('Registration failed:', err);
         }

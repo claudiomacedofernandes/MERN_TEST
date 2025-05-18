@@ -11,7 +11,7 @@ export interface IUser extends Document {
 const UserSchema: Schema<IUser> = new Schema({
     username: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' }
+    role: { type: String, enum: ['superadmin', 'admin', 'user', 'guest'], default: 'user' }
 });
 
 // Hash password before saving

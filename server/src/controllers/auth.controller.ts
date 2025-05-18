@@ -24,10 +24,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
         res.status(201).json({
             message: 'Logged in successfully.', user: {
-                id: user._id,
-                token: token,
+                userid: user._id,
                 username: user.username,
-                role: user.role,
+                userrole: user.role,
+                token: token,
             }});
     } catch (err) {
         console.log(err);
@@ -51,9 +51,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             return;
         };
 
+        const token = generateToken({ userid: user._id, userrole: user.role });
         res
-            .cookie(getCookieName(), generateToken({ id: user._id, role: user.role }), getCookieOptions())
-            .json({ message: 'Logged in successfully.', user: { id: user._id, username: user.username, role: user.role } });
+            .cookie(getCookieName(), token, getCookieOptions())
+            .json({ message: 'Logged in successfully.', user: { token, userid: user._id, username: user.username, userrole: user.role } });
     } catch (err) {
         res.status(500).json({ message: 'Login failed.', error: err });
     }
@@ -68,7 +69,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
 
     try {
         const decoded = decodeToken(token);
-        const user = await User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.userid).select('-password');
 
         res.json(user);
     } catch {

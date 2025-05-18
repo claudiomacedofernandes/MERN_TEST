@@ -6,8 +6,10 @@ const JWT_EXPIRES_IN = '1d'; // token expiry 1 day
 const COOKIE_NAME = 'token'; // cookie identifyer
 
 export interface DecodedToken {
-    id: string;
-    role: string;
+    userid: string;
+    username: string;
+    userrole: string;
+    token: string;
 }
 
 export const generateToken = (user: string | object | Buffer): string => {

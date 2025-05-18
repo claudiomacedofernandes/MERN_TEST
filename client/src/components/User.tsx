@@ -1,33 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import Login from './Login';
 import Register from './Register';
 
-interface UserProps {
-  user: string | null;
-  onUserChange: (username: string | null, role?: string) => void;
-}
-
-const User: React.FC<UserProps> = ({ user, onUserChange }) => {
-  const [role, setRole] = useState<string | null>(null);
+const User: React.FC = () => {
+  const { userid, username, userrole, logout } = useAuth();
   const [tab, setTab] = useState<'login' | 'register'>('login');
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem('role');
-    if (storedRole) setRole(storedRole);
-  }, [user]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('role');
-    onUserChange(null);
-  };
-
-  if (user) {
+  if (userid) {
     return (
       <div>
-        <h2>Welcome, {user}!</h2>
-        <p>Role: {role ?? 'N/A'}</p>
-        <button onClick={handleLogout}>Logout</button>
+        <h2>Welcome, {username}!</h2>
+        <p>Role: {userrole ?? 'N/A'}</p>
+        <button onClick={logout}>Logout</button>
       </div>
     );
   }
@@ -43,9 +28,9 @@ const User: React.FC<UserProps> = ({ user, onUserChange }) => {
         </button>
       </div>
       {tab === 'login' ? (
-        <Login onLogin={(username, role) => onUserChange(username, role)} />
+        <Login />
       ) : (
-        <Register onRegister={(username, role) => onUserChange(username, role)} />
+        <Register />
       )}
     </div>
   );
