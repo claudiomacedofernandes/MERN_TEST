@@ -30,7 +30,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 token: token,
             }});
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
