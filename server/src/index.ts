@@ -8,6 +8,7 @@ import fs from 'fs';
 
 import authRoutes from './routes/auth.routes';
 import photoRoutes from './routes/photo.routes';
+import statsRoutes from './routes/stats.routes';
 
 // Loads environment variables from a .env file
 dotenv.config();
@@ -47,6 +48,8 @@ app.use('/storage', (req, res) => {
 app.use('/api/auth', authRoutes);
 // Mounts photo operations routes
 app.use('/api/photos', photoRoutes);
+// Mounts stats routes
+app.use('/api/stats', statsRoutes);
 
 // Establishes a connection to a MongoDB database
 mongoose.connect(process.env.MONGO_URI!, {
