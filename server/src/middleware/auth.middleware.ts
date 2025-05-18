@@ -15,11 +15,6 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
   }
 
   try {
-    // Verify session exists
-    const session = await Session.findOne({ token });
-    if (!session) {
-      return res.status(401).json({ message: 'Unauthorized: Session expired or invalid' });
-    }
     // Attach user info to request
     req.user = decodeToken(token);
     next();

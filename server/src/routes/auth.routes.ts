@@ -13,7 +13,6 @@ router.get('/logout', requireAuth, trackStats('logout'), logout);
 router.put(
     '/update-role',
     requireAuth,
-    requireRole(USER_ROLES.filter(role => role !== 'guest')),
     updateRole
 );
 
