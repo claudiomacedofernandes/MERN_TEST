@@ -58,3 +58,22 @@ export const updateUserRole = async (userrole: string | null): Promise<string> =
 
   return res.data.user.userrole;
 };
+
+
+export const logoutUser = async (): Promise<boolean> => {
+  var res = null;
+  try {
+    res = await axios.get(
+      `${API_URL}/logout`,
+      { withCredentials: true }
+    );
+  } catch (error) {
+    res = null
+  }
+
+  if (!res) {
+    throw new Error('Logout failed');
+  }
+
+  return true;
+};

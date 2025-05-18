@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import User, { USER_ROLES, USER_ROLE_DEFAULT } from '../models/user.model';
+import Session from '../models/session.model';
 import { generateToken, decodeToken, getCookieName, getCookieOptions, DecodedToken } from '../utils/tokens.utils';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -20,6 +21,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
         // After saving the user
         const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
+        // Create session
+        await Session.create({
+          userId: user._id,
+          token,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        });
         res
             .cookie(getCookieName(), token, getCookieOptions())
             .status(201).json({
@@ -53,6 +60,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         };
 
         const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
+        // Create session
+        await Session.create({
+          userId: user._id,
+          token,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        });
         res
             .cookie(getCookieName(), token, getCookieOptions())
             .json({ message: 'Logged in successfully.', user: { token, userid: user._id, username: user.username, userrole: user.role } });
@@ -61,8 +74,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const logout = (_: Request, res: Response) => {
-    res.clearCookie(getCookieName()).json({ message: 'Logged out.' });
+export const logout = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const token = req.cookies.token;
+        if (token) {
+            // Delete session
+            await Session.deleteOne({ token });
+        }
+        res.clearCookie(getCookieName()).json({ message: 'Logged out.' });
+    } catch (err) {
+        res.status(500).json({ message: 'Logout failed.', error: err });
+    }
 };
 
 export const updateRole = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

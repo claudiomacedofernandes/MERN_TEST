@@ -24,10 +24,10 @@ export const trackStats = (action: string) => {
           await Stats.updateOne({}, { $inc: { usersDeleted: 1, currentUsers: -1 } });
           break;
         case 'login':
-          await Stats.updateOne({}, { $inc: { totalLogins: 1, totalLoggedInUsers: 1 } });
+          await Stats.updateOne({}, { $inc: { totalLogins: 1 } });
           break;
         case 'logout':
-          await Stats.updateOne({}, { $inc: { totalLogouts: 1, totalLoggedInUsers: -1 } });
+          await Stats.updateOne({}, { $inc: { totalLogouts: 1 } });
           break;
       }
       next();

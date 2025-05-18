@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 import Stats from '../models/stats.model';
+import Session from '../models/session.model';
 
 export const getStats = async (req: Request, res: Response): Promise<void> => {
   try {
     const stats = await Stats.findOne();
     if (!stats) {
       res.status(404).json({ message: 'Stats not found' });
-      return ;
+      return;
     }
+    // Count unique logged-in users
+    const loggedInUsers = await Session.distinct('userId').count();
     res.json({
       stats: {
         photosAdded: stats.photosAdded,
@@ -18,7 +21,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
         currentUsers: stats.currentUsers,
         totalLogins: stats.totalLogins,
         totalLogouts: stats.totalLogouts,
-        totalLoggedInUsers: stats.totalLoggedInUsers,
+        totalLoggedInUsers: loggedInUsers,
         updatedAt: stats.updatedAt
       }
     });

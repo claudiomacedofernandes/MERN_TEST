@@ -9,7 +9,7 @@ export interface IStats extends Document {
   currentUsers: number;
   totalLogins: number;
   totalLogouts: number;
-  totalLoggedInUsers: number;
+  totalLoggedInUsers: number; // Derived from active sessions
   updatedAt: Date;
 }
 

@@ -9,7 +9,7 @@ import { trackStats } from '../middleware/stats.middleware';
 const router = express.Router();
 router.post('/register', trackStats('userAdded'), register);
 router.post('/login', trackStats('login'), login);
-router.post('/logout', requireAuth, trackStats('logout'), logout);
+router.get('/logout', requireAuth, trackStats('logout'), logout);
 router.put(
     '/update-role',
     requireAuth,

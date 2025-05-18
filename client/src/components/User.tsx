@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { updateUserRole, USER_ROLES } from '../api/auth.api';
+import { logoutUser, updateUserRole, USER_ROLES } from '../api/auth.api';
 import { useAuth } from '../contexts/AuthContext';
 import Login from './Login';
 import Register from './Register';
@@ -16,6 +16,19 @@ const User: React.FC = () => {
     } catch (err) {
       console.error('Role update failed:', err);
       alert('Failed to update role');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await logoutUser();
+      if (!res) {
+        console.error('Logout incomplete');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      logout();
     }
   };
 
@@ -36,7 +49,7 @@ const User: React.FC = () => {
             ))}
           </select>
         ) : 'N/A'}</p>
-        <button onClick={logout}>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     );
   }
