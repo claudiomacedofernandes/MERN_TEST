@@ -5,13 +5,13 @@ import Login from './Login';
 import Register from './Register';
 
 const User: React.FC = () => {
-  const { token, userid, username, userrole, logout, updateRole } = useAuth();
+  const { userid, username, userrole, logout, updateRole } = useAuth();
   const [tab, setTab] = useState<'login' | 'register'>('login');
 
   const handleRoleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     try {
       const selectedRole = e.target.value;
-      const newRole = await updateUserRole(token, userid, selectedRole);
+      const newRole = await updateUserRole(selectedRole);
       updateRole(newRole);
     } catch (err) {
       console.error('Role update failed:', err);

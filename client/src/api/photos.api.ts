@@ -12,49 +12,43 @@ export interface Photo {
     uploadedAt: string;
 }
 
-export const getPhotos = async (token: string | null): Promise<Photo[]> => {
-    const res = await axios.get(API_URL, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+export const getPhotos = async (): Promise<Photo[]> => {
+    const res = await axios.get(
+        API_URL,
+        { withCredentials: true }
+    );
 
-    if (!res.data) {
-        throw new Error('Unable do get photos');
-    }
-
-    if (!res.data.photos) {
-        throw new Error(res.data.message);
+    if (!res.data?.photos) {
+        throw new Error(res.data.message || 'Unable to get photos');
     }
 
     return res.data.photos;
 };
 
-export const putPhoto = async (token: string | null, formData: FormData | null): Promise<Photo> => {
-    const res = await axios.post(`${API_URL}/upload`, formData, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+export const putPhoto = async (formData: FormData): Promise<Photo> => {
+    const res = await axios.post(
+        `${API_URL}/upload`,
+        formData,
+        {
+            withCredentials: true,
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
 
-    if (!res.data) {
-        throw new Error('Unable do put photo');
-    }
-
-    if (!res.data.photo) {
-        throw new Error(res.data.message);
+    if (!res.data?.photo) {
+        throw new Error(res.data.message || 'Unable to put photo');
     }
 
     return res.data.photo;
 };
 
-export const deletePhoto = async (token: string | null, photoId: string | null, userId: string | null): Promise<boolean> => {
-    const res = await axios.delete(`${API_URL}/${photoId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { userid: userId }
-    });
+export const deletePhoto = async (photoId: string): Promise<boolean> => {
+    const res = await axios.delete(
+        `${API_URL}/${photoId}`,
+        { withCredentials: true }
+    );
 
     if (!res) {
-        throw new Error('Unable do delete photo');
+        throw new Error('Unable to delete photo');
     }
 
     return true;

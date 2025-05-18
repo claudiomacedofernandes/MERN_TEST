@@ -4,7 +4,7 @@ import { USER_ROLES } from '../api/auth.api';
 import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
 
 const Photos: React.FC = () => {
-  const { userid, username, userrole, token } = useAuth();
+  const { userid, username, userrole } = useAuth();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -13,14 +13,14 @@ const Photos: React.FC = () => {
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
-        const updatedPhotos = await getPhotos(token);
+        const updatedPhotos = await getPhotos();
         setPhotos(updatedPhotos);
       } catch (err) {
         setError('Failed to load photos');
       }
     };
     fetchPhotos();
-  }, [token]);
+  }, []);
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,22 +36,15 @@ const Photos: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('photo', file);
-    formData.append('user', JSON.stringify({
-      userid,
-      username,
-      userrole
-    }));
-
     try {
-      const newPhoto = await putPhoto(token, formData);
+      const formData = new FormData();
+      formData.append('photo', file);
+      const newPhoto = await putPhoto(formData);
       if (newPhoto)
         setPhotos([newPhoto, ...photos]);
       setFile(null);
       setError(null);
     } catch (err) {
-      console.error(err);
       setError('Failed to upload photo');
     }
   };
@@ -59,18 +52,24 @@ const Photos: React.FC = () => {
   // Handle photo deletion
   const handleDelete = async (photoId: string) => {
     try {
-      const res = await deletePhoto(token, photoId, userid);
+      const res = await deletePhoto(photoId);
       if (res)
         setPhotos(photos.filter(photo => photo.id !== photoId));
       setError(null);
     } catch (err) {
-      console.error(err);
       setError('Failed to delete photo');
     }
   };
 
-  // Determine if delete button should be enabled
-  // Server also checks if user can delete photo
+  // Determine if the upload button should be enabled
+  // It is double checked in server
+  const canUploadPhoto = () => {
+    if (!userid || !userrole) return false;
+    return USER_ROLES.filter(role => role !== 'guest').includes(userrole||"");
+  };
+
+  // Determine if the delete button should be enabled
+  // It is double checked in server
   const canDeletePhoto = (photo: Photo) => {
     if (!userid || !userrole) return false;
     if (photo.username === username) return true; // Owner can delete
@@ -84,17 +83,14 @@ const Photos: React.FC = () => {
       <h1>Photos</h1>
 
       {/* Upload Button (Hidden for Guest, Disabled for No User) */}
-      {userrole !== 'guest' && (
+      {canUploadPhoto() && (
         <div>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
           />
-          <button
-            onClick={handleUpload}
-            disabled={!userid}
-          >
+          <button onClick={handleUpload}>
             Upload Photo
           </button>
         </div>
@@ -104,14 +100,10 @@ const Photos: React.FC = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {/* Photo Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
         {photos.map((photo) => (
           <div key={photo.id} style={{ border: '1px solid #ccc', padding: '10px' }}>
-            <img
-              src={`http://localhost:3001${photo.path}`}
-              alt={photo.filename}
-              style={{ maxWidth: '100%', height: 'auto' }}
-            />
+            <img src={`http://localhost:3001${photo.path}`} alt={photo.filename} style={{ maxWidth: '100%' }} />
             <p>Uploaded by: {photo.username}</p>
             <p>Date: {new Date(photo.uploadedAt).toLocaleDateString()}</p>
             <button

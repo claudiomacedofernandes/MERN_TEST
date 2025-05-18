@@ -1,8 +1,26 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 
-import User, { USER_ROLES } from '../models/user.model';
-import { generateToken, decodeToken, getCookieName, getCookieOptions } from '../utils/tokens.utils';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
+import User, { USER_ROLES, USER_ROLE_DEAULT } from '../models/user.model';
+import { generateToken, decodeToken, getCookieName, getCookieOptions, DecodedToken } from '../utils/tokens.utils';
+
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        res.status(401).json({ message: 'No token provided' });
+        return;
+    }
+
+    try {
+        const decoded = decodeToken(token);
+        const user = await User.findById(decoded.userid).select('-password');
+
+        res.json(user);
+    } catch {
+        res.status(401).json({ message: 'Token is not valid' });
+    }
+};
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
@@ -16,10 +34,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         }
 
         const hashed = await bcrypt.hash(password, 10);
-        const user = await User.create({ username, password: hashed });
+        const user = await User.create({ username, role: USER_ROLE_DEAULT, password: hashed });
 
         // After saving the user
-        const token = generateToken({ id: user._id });
+        const token = generateToken({ id: user._id, username: username });
         res.cookie('token', token, getCookieOptions());
 
         res.status(201).json({
@@ -28,7 +46,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 username: user.username,
                 userrole: user.role,
                 token: token,
-            }});
+            }
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error', error: err });
@@ -51,7 +70,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             return;
         };
 
-        const token = generateToken({ userid: user._id, userrole: user.role });
+        const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
         res
             .cookie(getCookieName(), token, getCookieOptions())
             .json({ message: 'Logged in successfully.', user: { token, userid: user._id, username: user.username, userrole: user.role } });
@@ -60,36 +79,25 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getMe = async (req: Request, res: Response): Promise<void> => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        res.status(401).json({ message: 'No token provided' });
-        return;
-    }
-
-    try {
-        const decoded = decodeToken(token);
-        const user = await User.findById(decoded.userid).select('-password');
-
-        res.json(user);
-    } catch {
-        res.status(401).json({ message: 'Token is not valid' });
-    }
-};
-
 export const logout = (_: Request, res: Response) => {
     res.clearCookie(getCookieName()).json({ message: 'Logged out.' });
 };
 
-export const updateRole = async (req: Request, res: Response): Promise<void> => {
+export const updateRole = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-        const { userid, role } = req.body.data;
-        if (!userid || !role) {
+        if (!req.user) {
+            res.status(403).json({ message: 'Forbidden: No user identification' });
+            return;
+        }
+
+        const userRequest = req.user as DecodedToken;
+        const { role } = req.body;
+        if (!userRequest.userid || !role) {
             res.status(400).json({ message: 'User ID and role are required' });
             return;
         }
 
-        const user = await User.findById(userid);
+        const user = await User.findById(userRequest.userid);
         if (!user) {
             res.status(404).json({ message: 'User not found' });
             return;

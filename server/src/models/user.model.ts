@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 // The user roles by Hierarchy
 export const USER_ROLES = ['superadmin', 'admin', 'user', 'guest'];
+export const USER_ROLE_DEAULT = 'guest';
 
 export interface IUser extends Document {
     username: string;
@@ -14,7 +15,7 @@ export interface IUser extends Document {
 const UserSchema: Schema<IUser> = new Schema({
     username: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
-    role: { type: String, enum: USER_ROLES, default: 'user' }
+    role: { type: String, enum: USER_ROLES, default: USER_ROLE_DEAULT }
 });
 
 // Hash password before saving

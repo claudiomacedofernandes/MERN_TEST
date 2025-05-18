@@ -1,21 +1,29 @@
 import express from 'express';
-import { uploadPhoto, getPhotos, deletePhoto } from '../controllers/photo.controller';
 import { upload } from '../utils/multer.utils';
-import { requireAuth } from '../middleware/auth.middleware';
+import { USER_ROLES } from '../models/user.model';
+import { uploadPhoto, getPhotos, deletePhoto } from '../controllers/photo.controller';
+import { requireAuth, requireRole } from '../middleware/auth.middleware';
 
 const router = express.Router();
-
-// Upload photo (all roles except Guest)
-router.post(
-  '/upload',
-  upload.single('photo'),
-  uploadPhoto
-);
 
 // Get all photos (all roles)
 router.get('/', getPhotos);
 
+// Upload photo (all roles except Guest)
+router.post(
+  '/upload',
+  requireAuth,
+  requireRole(USER_ROLES.filter(role => role !== 'guest')),
+  upload.single('photo'),
+  uploadPhoto
+);
+
 // Delete photo (authorized users only)
-router.delete('/:id', deletePhoto);
+router.delete(
+  '/:id',
+  requireAuth,
+  requireRole(USER_ROLES.filter(role => role !== 'guest')),
+  deletePhoto
+);
 
 export default router;

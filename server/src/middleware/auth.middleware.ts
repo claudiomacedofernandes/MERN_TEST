@@ -15,7 +15,7 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
 
   try {
     // Attach user info to request
-    req.user = decodeToken(token); 
+    req.user = decodeToken(token);
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
@@ -23,7 +23,7 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
 }
 
 // Middleware to restrict access based on user role
-export function requireRole(...allowedRoles: string[]) {
+export function requireRole(allowedRoles: string[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.user || !allowedRoles.includes(req.user.userrole)) {
       return res.status(403).json({ message: 'Forbidden: Insufficient role' });

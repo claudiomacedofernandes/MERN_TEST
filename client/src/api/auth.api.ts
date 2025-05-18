@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3001/api/auth';
@@ -19,45 +18,42 @@ export interface AuthRequestForm {
 }
 
 export const loginUser = async (formData: AuthRequestForm): Promise<AuthResponse> => {
-  const res = await axios.post(`${API_URL}/login`, formData);
+  const res = await axios.post(
+    `${API_URL}/login`,
+    formData,
+    { withCredentials: true }
+  );
 
-  if (!res.data) {
-    throw new Error('Login failed');
-  }
-
-  if (!res.data.user) {
-    throw new Error(res.data.message);
+  if (!res.data?.user) {
+    throw new Error(res.data.message || 'Login failed');
   }
 
   return res.data.user;
 };
 
 export const registerUser = async (formData: AuthRequestForm): Promise<AuthResponse> => {
-  const res = await axios.post(`${API_URL}/register`, formData);
+  const res = await axios.post(
+    `${API_URL}/register`,
+    formData,
+    { withCredentials: true }
+  );
 
-  if (!res.data) {
-    throw new Error('Registration failed');
-  }
-
-  if (!res.data.user) {
-    throw new Error(res.data.message);
+  if (!res.data?.user) {
+    throw new Error(res.data.message || 'Registration failed');
   }
 
   return res.data.user;
 };
 
-export const updateUserRole = async (token: string | null, userid: string | null, userrole: string | null): Promise<string> => {
-  const res = await axios.put(`${API_URL}/update-role`, {
-    headers: { Authorization: `Bearer ${token}` },
-    data: { userid, role: userrole }
-  });
+export const updateUserRole = async (userrole: string | null): Promise<string> => {
+  const res = await axios.put(
+    `${API_URL}/update-role`,
+    { role: userrole },
+    { withCredentials: true }
+  );
 
-  if (!res.data) {
-    throw new Error('Unable to update the user role');
-  }
-
-  if (!res.data.user) {
-    throw new Error(res.data.message);
+  if (!res.data?.user) {
+    throw new Error(res.data.message || 'Unable to update the user role');
   }
 
   return res.data.user.userrole;

@@ -4,7 +4,7 @@ import { registerUser } from '../api/auth.api';
 
 const Register: React.FC = () => {
     const { login } = useAuth();
-    const [formData, setFormData] = useState({ username: '', password: '', role: 'user' });
+    const [formData, setFormData] = useState({ username: '', password: '', role: 'guest' });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
