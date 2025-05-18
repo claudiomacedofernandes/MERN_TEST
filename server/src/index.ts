@@ -33,7 +33,7 @@ if (!fs.existsSync(storagePath)) {
 }
 app.use('/storage', express.static(storagePath, {
   setHeaders: (res, filePath) => {
-    console.log(`Serving file: ${filePath}`);
+    // console.log(`Serving file: ${filePath}`);
   },
   fallthrough: true
 }));

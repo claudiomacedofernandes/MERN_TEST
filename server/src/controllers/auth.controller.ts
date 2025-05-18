@@ -2,25 +2,8 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import User, { USER_ROLES, USER_ROLE_DEAULT } from '../models/user.model';
+import User, { USER_ROLES, USER_ROLE_DEFAULT } from '../models/user.model';
 import { generateToken, decodeToken, getCookieName, getCookieOptions, DecodedToken } from '../utils/tokens.utils';
-
-export const getMe = async (req: Request, res: Response): Promise<void> => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        res.status(401).json({ message: 'No token provided' });
-        return;
-    }
-
-    try {
-        const decoded = decodeToken(token);
-        const user = await User.findById(decoded.userid).select('-password');
-
-        res.json(user);
-    } catch {
-        res.status(401).json({ message: 'Token is not valid' });
-    }
-};
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
@@ -33,21 +16,20 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const hashed = await bcrypt.hash(password, 10);
-        const user = await User.create({ username, role: USER_ROLE_DEAULT, password: hashed });
+        const user = await User.create({ username, role: USER_ROLE_DEFAULT, password });
 
         // After saving the user
-        const token = generateToken({ id: user._id, username: username });
-        res.cookie('token', token, getCookieOptions());
-
-        res.status(201).json({
-            message: 'Logged in successfully.', user: {
-                userid: user._id,
-                username: user.username,
-                userrole: user.role,
-                token: token,
-            }
-        });
+        const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
+        res
+            .cookie(getCookieName(), token, getCookieOptions())
+            .status(201).json({
+                message: 'Logged in successfully.', user: {
+                    userid: user._id,
+                    username: user.username,
+                    userrole: user.role,
+                    token: token,
+                }
+            });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error', error: err });
@@ -64,7 +46,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             return;
         };
 
-        const match = await bcrypt.compare(password, user.password);
+        const match = user.matchPassword(password);
         if (!match) {
             res.status(400).json({ message: 'Invalid credentials.' })
             return;
@@ -111,14 +93,18 @@ export const updateRole = async (req: AuthenticatedRequest, res: Response): Prom
         user.role = role;
         await user.save();
 
-        res.json({
-            message: 'Role updated successfully',
-            user: {
-                userid: user._id,
-                username: user.username,
-                userrole: user.role
-            }
-        });
+        // Generate new token with updated role
+        const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
+        res
+            .cookie(getCookieName(), token, getCookieOptions())
+            .json({
+                message: 'Role updated successfully',
+                user: {
+                    userid: user._id,
+                    username: user.username,
+                    userrole: user.role
+                }
+            });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error', error: err });
