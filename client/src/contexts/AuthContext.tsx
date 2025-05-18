@@ -7,6 +7,7 @@ interface AuthContextType {
   userrole: string | null;
   login: (token: string, userid: string, username: string, userrole: string) => void;
   logout: () => void;
+  updateRole: (userrole: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,8 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserRole(null);
   };
 
+  const updateRole = (userrole: string) => {
+    localStorage.setItem('userrole', userrole);
+    setUserRole(userrole);
+  };
+
   return (
-    <AuthContext.Provider value={{ token, userid, username, userrole, login, logout }}>
+    <AuthContext.Provider value={{ token, userid, username, userrole, login, logout, updateRole }}>
       {children}
     </AuthContext.Provider>
   );

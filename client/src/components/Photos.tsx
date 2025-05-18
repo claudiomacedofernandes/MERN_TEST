@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { USER_ROLES } from './User';
-import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos';
+import { USER_ROLES } from '../api/auth.api';
+import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
 
 const Photos: React.FC = () => {
   const { userid, username, userrole, token } = useAuth();

@@ -53,8 +53,6 @@ export const deletePhoto = async (token: string | null, photoId: string | null, 
         data: { userid: userId }
     });
 
-    console.log(res);
-
     if (!res) {
         throw new Error('Unable do delete photo');
     }

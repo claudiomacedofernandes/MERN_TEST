@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 
-import User from '../models/user.model';
+import User, { USER_ROLES } from '../models/user.model';
 import { generateToken, decodeToken, getCookieName, getCookieOptions } from '../utils/tokens.utils';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -79,4 +79,40 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
 
 export const logout = (_: Request, res: Response) => {
     res.clearCookie(getCookieName()).json({ message: 'Logged out.' });
+};
+
+export const updateRole = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { userid, role } = req.body.data;
+        if (!userid || !role) {
+            res.status(400).json({ message: 'User ID and role are required' });
+            return;
+        }
+
+        const user = await User.findById(userid);
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        if (!USER_ROLES.includes(role)) {
+            res.status(400).json({ message: 'Invalid role' });
+            return;
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.json({
+            message: 'Role updated successfully',
+            user: {
+                userid: user._id,
+                username: user.username,
+                userrole: user.role
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error', error: err });
+    }
 };
