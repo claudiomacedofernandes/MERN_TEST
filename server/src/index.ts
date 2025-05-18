@@ -3,8 +3,11 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 
 import authRoutes from './routes/auth.routes';
+import photoRoutes from './routes/photo.routes';
 
 // Loads environment variables from a .env file
 dotenv.config();
@@ -20,8 +23,30 @@ app.use(express.json());
 // Parse cookies from incoming requests for authentication and session management.
 app.use(cookieParser());
 
+// Serve static files from the storage folder
+// For now we serve from the API server, a dedicated server will allow
+// a performance improvement
+const storagePath = path.join(__dirname, '../storage');
+if (!fs.existsSync(storagePath)) {
+  // Create storage directory if it doesn't exist for photo uploads
+  fs.mkdirSync(storagePath);
+}
+app.use('/storage', express.static(storagePath, {
+  setHeaders: (res, filePath) => {
+    console.log(`Serving file: ${filePath}`);
+  },
+  fallthrough: true
+}));
+// Handle 404 for missing files
+app.use('/storage', (req, res) => {
+  console.error(`File not found: ${req.originalUrl}`);
+  res.status(404).json({ message: 'File not found' });
+});
+
 // Mounts authentication routes
 app.use('/api/auth', authRoutes);
+// Mounts photo operations routes
+app.use('/api/photos', photoRoutes);
 
 // Establishes a connection to a MongoDB database
 mongoose.connect(process.env.MONGO_URI!, {

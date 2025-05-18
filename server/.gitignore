@@ -43,3 +43,6 @@ npm-cache/
 *.pid
 *.seed
 *.pid.lock
+
+# Storage
+storage/
