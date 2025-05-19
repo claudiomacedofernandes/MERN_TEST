@@ -9927,6 +9927,20 @@ video {
   }
 }
 
+@keyframes pulse-50-100 {
+  0% {
+    opacity: 1.0;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1.0;
+  }
+}
+
 .animate-none {
   animation: none;
 }
@@ -9945,6 +9959,10 @@ video {
 
 .animate-bounce {
   animation: bounce 1s infinite;
+}
+
+.animate-pulse-50-100 {
+  animation: pulse-50-100 2s ease-in-out infinite;
 }
 
 .cursor-auto {
@@ -30403,7 +30421,7 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   border-radius: 0.375rem;
   --tw-bg-opacity: 1;
-  background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
+  background-color: rgba(156, 163, 175, var(--tw-bg-opacity));
 }
 
 .border {
@@ -39764,6 +39782,10 @@ body {
 
   .sm\:animate-bounce {
     animation: bounce 1s infinite;
+  }
+
+  .sm\:animate-pulse-50-100 {
+    animation: pulse-50-100 2s ease-in-out infinite;
   }
 
   .sm\:cursor-auto {
@@ -69444,6 +69466,10 @@ body {
     animation: bounce 1s infinite;
   }
 
+  .md\:animate-pulse-50-100 {
+    animation: pulse-50-100 2s ease-in-out infinite;
+  }
+
   .md\:cursor-auto {
     cursor: auto;
   }
@@ -99120,6 +99146,10 @@ body {
 
   .lg\:animate-bounce {
     animation: bounce 1s infinite;
+  }
+
+  .lg\:animate-pulse-50-100 {
+    animation: pulse-50-100 2s ease-in-out infinite;
   }
 
   .lg\:cursor-auto {
@@ -128800,6 +128830,10 @@ body {
     animation: bounce 1s infinite;
   }
 
+  .xl\:animate-pulse-50-100 {
+    animation: pulse-50-100 2s ease-in-out infinite;
+  }
+
   .xl\:cursor-auto {
     cursor: auto;
   }
@@ -158476,6 +158510,10 @@ body {
 
   .\32xl\:animate-bounce {
     animation: bounce 1s infinite;
+  }
+
+  .\32xl\:animate-pulse-50-100 {
+    animation: pulse-50-100 2s ease-in-out infinite;
   }
 
   .\32xl\:cursor-auto {

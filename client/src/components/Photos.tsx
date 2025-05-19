@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { USER_ROLES } from '../api/auth.api';
 import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
 import LazyImage from './LazyImage';
 
+
 const Photos: React.FC = () => {
   const { userid, username, userrole } = useAuth();
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch photos
   const fetchPhotos = useCallback(async () => {
@@ -32,28 +34,25 @@ const Photos: React.FC = () => {
     return () => clearInterval(interval);
   }, [fetchPhotos]);
 
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
+  // Handle upload button click
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
-  // Handle photo upload
-  const handleUpload = async () => {
-    if (!file) {
-      setError('Please select a file');
-      return;
-    }
+  // Handle file selection and auto-upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     try {
       const formData = new FormData();
       formData.append('photo', file);
       const newPhoto = await putPhoto(formData);
       if (newPhoto) setPhotos([newPhoto, ...photos]);
-      setFile(null);
       setError(null);
     } catch (err) {
       setError('Failed to upload photo');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -68,39 +67,36 @@ const Photos: React.FC = () => {
     }
   };
 
-  // Determine if the upload button should be enabled
-  // It is double checked in server
-  const canUploadPhoto = () => {
-    if (!userid || !userrole) return false;
-    return USER_ROLES.filter((role) => role !== 'guest').includes(userrole || '');
+  // Open modal
+  const openModal = (photo: Photo) => {
+    setSelectedPhoto(photo);
   };
 
-  // Determine if the delete button should be enabled
-  // It is double checked in server
+  // Close modal
+  const closeModal = () => {
+    setSelectedPhoto(null);
+  };
+
+  // Determine if upload is allowed
+  const canUploadPhoto = () => {
+    if (!userid || !userrole) return false;
+    return USER_ROLES.filter((role) => role !== 'guest').includes(userrole);
+  };
+
+  // Determine if delete is allowed
   const canDeletePhoto = (photo: Photo) => {
     if (!userid || !userrole) return false;
-    if (photo.username === username) return true; // Owner can delete
+    if (photo.username === username) return true;
     const userRoleIndex = USER_ROLES.indexOf(userrole);
     const ownerRoleIndex = USER_ROLES.indexOf(photos.find(p => p.username === photo.username)?.userrole || 'user');
-    return userRoleIndex < ownerRoleIndex; // Higher role (lower index) can delete
+    return userRoleIndex < ownerRoleIndex;
   };
 
   return (
-    <div className="card">
-      <h2 className="text-2xl font-semibold mb-4">Photos</h2>
-
-      {/* Controls */}
-      {canUploadPhoto() && (
-        <div className="mb-4 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="border p-2 rounded-md"
-          />
-          <button onClick={handleUpload} className="btn btn-primary">
-            Upload Photo
-          </button>
+    <div className="card p-4">
+      <h2 className="text-2xl font-semibold">Photos</h2>
+      <div className="sticky top-0 z-10 bg-white p-4 -mx-4 border-b shadow-sm flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
           <button
             onClick={fetchPhotos}
             disabled={isRefreshing}
@@ -108,23 +104,52 @@ const Photos: React.FC = () => {
           >
             {isRefreshing ? 'Refreshing...' : 'Refresh Photos'}
           </button>
+          {canUploadPhoto() && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <button
+                onClick={handleUploadClick}
+                className="btn btn-primary"
+              >
+                UploadPhoto
+              </button>
+            </>
+          )}
+          {error && <p className="text-red-500 text-sm absolute right-4">{error}</p>}
         </div>
-      )}
+      </div>
 
-      {/* Error Message */}
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-
-      {/* Photo Grid (Single Column) */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         {photos.map((photo) => (
-          <LazyImage
-            key={photo.id}
-            photo={photo}
-            canDelete={canDeletePhoto(photo)}
-            onDelete={() => handleDelete(photo.id)}
-          />
+            <LazyImage
+              photo={photo}
+              canDelete={canDeletePhoto(photo)}
+              onDelete={() => handleDelete(photo.id)}
+              openModal={openModal}
+            />
         ))}
       </div>
+
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+          onClick={closeModal}
+        >
+          <div className="relative max-w-[90vw] max-h-[90vh]">
+            <img
+              src={`http://localhost:3001${selectedPhoto.path}`}
+              alt={selectedPhoto?.filename}
+              className="max-w-full max-h-[90vh] object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

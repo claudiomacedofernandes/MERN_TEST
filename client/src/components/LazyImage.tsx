@@ -6,7 +6,8 @@ const LazyImage: React.FC<{
     photo: Photo;
     canDelete: boolean;
     onDelete: () => void;
-}> = ({ photo, canDelete, onDelete }) => {
+    openModal: (photo: Photo) => void;
+}> = ({ photo, canDelete, onDelete, openModal }) => {
     const [isVisible, setIsVisible] = useState(false);
     const imgRef = React.useRef<HTMLDivElement>(null);
 
@@ -28,27 +29,34 @@ const LazyImage: React.FC<{
         <div ref={imgRef} className="relative">
             {isVisible ? (
                 <div className="card">
-                    <img
-                        src={`http://localhost:3001${photo.path}`}
-                        alt={photo.filename}
-                        className="w-full h-48 object-cover rounded-md mb-2"
-                        loading="lazy"
-                    />
+                    <div
+                        key={photo.id}
+                        className="cursor-pointer"
+                        onClick={() => openModal(photo)}
+                    >
+                        <img
+                            src={`http://localhost:3001${photo.path}`}
+                            alt={photo.filename}
+                            className="w-full h-80 object-cover rounded-md mb-2"
+                            loading="lazy"
+                        />
+                    </div>
                     <p className="text-sm text-gray-600">Uploaded by: {photo.username}</p>
                     <p className="text-sm text-gray-600">
                         Date: {new Date(photo.uploadedAt).toLocaleDateString()}
                     </p>
-                    {canDelete && (
+                    {(
                         <button
                             onClick={onDelete}
                             className="btn btn-danger mt-2"
+                            disabled={!canDelete}
                         >
                             Delete
                         </button>
                     )}
                 </div>
             ) : (
-                <div className="photo-placeholder"></div>
+                <div className="bg-gray-300 rounded-md w-full h-80 animate-pulse-50-100"></div>
             )}
         </div>
     );
