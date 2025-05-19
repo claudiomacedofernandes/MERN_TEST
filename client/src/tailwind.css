@@ -30406,6 +30406,11 @@ body {
   background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
 }
 
+.border {
+  border-width: 2px;
+  border-color: #dfd9d9;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

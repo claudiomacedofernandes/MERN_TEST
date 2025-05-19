@@ -34,3 +34,8 @@ body {
 .photo-placeholder {
   @apply bg-gray-200 animate-pulse rounded-md w-full h-48;
 }
+
+.border {
+  border-width: 2px;
+  border-color: #dfd9d9;
+}
