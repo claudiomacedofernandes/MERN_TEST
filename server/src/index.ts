@@ -18,7 +18,11 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Enable Cross-Origin Resource Sharing for API access from different domains
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({
+  credentials: true,
+  origin: process.env.NODE_ENV === 'production' ? 'http://localhost:3000' : true
+}
+));
 // Parse incoming JSON request bodies for easy data handling
 app.use(express.json());
 // Parse cookies from incoming requests for authentication and session management
@@ -57,7 +61,7 @@ mongoose.connect(process.env.MONGO_URI!, {
   useUnifiedTopology: true,
 })
   .then(() => {
-        // Starts the Express server
+    // Starts the Express server
     app.listen(port, () => {
       console.log(`Server running on http://localhost:${port}`);
     });
