@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/photos';
+const API_URL = `${process.env.REACT_APP_SERVER_API}/api/photos`;
 
 export interface Photo {
     id: string;

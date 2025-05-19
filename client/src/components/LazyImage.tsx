@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Photo } from '../api/photos.api';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = `${process.env.REACT_APP_STORAGE_API}`;
 
 // Lazy-loaded Image Component
 const LazyImage: React.FC<{

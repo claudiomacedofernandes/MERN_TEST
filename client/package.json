@@ -2,6 +2,7 @@
   "name": "test-react",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://192.168.1.80:3001",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -34,7 +35,8 @@
     "tailwindcss": "^2.2.19"
   },
   "scripts": {
-    "start": "postcss src/index.css -o src/tailwind.css && react-scripts start",
+    "start": "react-scripts start",
+    "start:css": "postcss src/index.css -o src/tailwind.css && react-scripts start",
     "build": "postcss src/index.css -o src/tailwind.css && react-scripts build",
     "build:css": "postcss src/index.css -o src/tailwind.css",
     "test": "react-scripts test",

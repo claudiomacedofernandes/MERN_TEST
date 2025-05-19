@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/auth';
+const API_URL = `${process.env.REACT_APP_SERVER_API}/api/auth`;
 
 // The user roles by Hierarchy
 export const USER_ROLES = ['superadmin', 'admin', 'user', 'guest'];
