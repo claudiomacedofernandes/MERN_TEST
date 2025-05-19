@@ -16,5 +16,5 @@ Thumbs.db
 .env
 
 #local dev
-utils
-local_deployment
+utils/
+local_deployment/
