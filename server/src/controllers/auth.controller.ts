@@ -53,7 +53,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             return;
         };
 
-        const match = user.matchPassword(password);
+        const match = await user.matchPassword(password);
         if (!match) {
             res.status(400).json({ message: 'Invalid credentials.' })
             return;
