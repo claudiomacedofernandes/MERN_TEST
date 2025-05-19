@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Photo } from '../api/photos.api';
 
+const API_URL = 'http://localhost:3001';
+
 // Lazy-loaded Image Component
 const LazyImage: React.FC<{
     photo: Photo;
@@ -35,7 +37,7 @@ const LazyImage: React.FC<{
                         onClick={() => openModal(photo)}
                     >
                         <img
-                            src={`http://localhost:3001${photo.path}`}
+                            src={`${API_URL}${photo.path}`}
                             alt={photo.filename}
                             className="w-full h-80 object-cover rounded-md mb-2"
                             loading="lazy"

@@ -4,6 +4,7 @@ import { USER_ROLES } from '../api/auth.api';
 import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
 import LazyImage from './LazyImage';
 
+const API_URL = 'http://localhost:3001';
 const PHOTOS_AUTO_REFRESH_INTERVAL = 30000;
 
 const Photos: React.FC = () => {
@@ -149,7 +150,7 @@ const Photos: React.FC = () => {
         >
           <div className="relative max-w-[90vw] max-h-[90vh]">
             <img
-              src={`http://localhost:3001${selectedPhoto.path}`}
+              src={`${API_URL}${selectedPhoto.path}`}
               alt={selectedPhoto?.filename}
               className="max-w-full max-h-[90vh] object-contain"
             />

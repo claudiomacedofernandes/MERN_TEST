@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
-import fs from 'fs';
 
 import authRoutes from './routes/auth.routes';
 import photoRoutes from './routes/photo.routes';
@@ -20,7 +19,7 @@ const port = process.env.PORT || 3001;
 // Enable Cross-Origin Resource Sharing for API access from different domains
 app.use(cors({
   credentials: true,
-  origin: process.env.NODE_ENV === 'production' ? 'http://localhost:3000' : true
+  origin: process.env.NODE_ENV === 'production' ? `http://localhost:${port}` : true
 }
 ));
 // Parse incoming JSON request bodies for easy data handling
@@ -29,24 +28,22 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve static files from the storage folder
-// For now we serve from the API server, a dedicated server will allow
-// a performance improvement
-const storagePath = path.join(__dirname, '../storage');
-if (!fs.existsSync(storagePath)) {
-  // Create storage directory if it doesn't exist for photo uploads
-  fs.mkdirSync(storagePath);
+// For now we serve from the API server, a dedicated server will allow better performance
+if (process.env.NODE_ENV === 'development') {
+  const storagePath = path.join(__dirname, process.env.STORAGE_PATH || '../storage');
+  console.log(storagePath);
+  app.use('/storage', express.static(storagePath, {
+    setHeaders: (res, filePath) => {
+      // console.log(`Serving file: ${filePath}`);
+    },
+    fallthrough: true
+  }));
+  // Handle 404 for missing files
+  app.use('/storage', (req, res) => {
+    console.error(`File not found: ${req.originalUrl}`);
+    res.status(404).json({ message: 'File not found' });
+  });
 }
-app.use('/storage', express.static(storagePath, {
-  setHeaders: (res, filePath) => {
-    // console.log(`Serving file: ${filePath}`);
-  },
-  fallthrough: true
-}));
-// Handle 404 for missing files
-app.use('/storage', (req, res) => {
-  console.error(`File not found: ${req.originalUrl}`);
-  res.status(404).json({ message: 'File not found' });
-});
 
 // Mounts authentication routes
 app.use('/api/auth', authRoutes);

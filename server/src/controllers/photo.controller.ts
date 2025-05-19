@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
 
 import { DecodedToken } from '../utils/tokens.utils';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import Photo, { IPhoto } from '../models/photo.model';
 import User, { USER_ROLES } from '../models/user.model';
 
+dotenv.config();
 
 export const getPhotos = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
@@ -99,7 +101,7 @@ export const deletePhoto = async (req: AuthenticatedRequest, res: Response): Pro
     }
 
     // Delete file from storage
-    const filePath = path.join(__dirname, '../../storage', photo.filename);
+    const filePath = path.join(__dirname, `../${process.env.STORAGE_PATH || '../storage'}`, photo.filename);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
