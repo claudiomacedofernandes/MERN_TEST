@@ -50,7 +50,7 @@ const User: React.FC = () => {
             ))}
           </select>
         </div>
-        <button onClick={handleLogout} className="btn btn-primary bg-red-600 hover:bg-red-700">
+        <button onClick={handleLogout} className="btn btn-danger">
           Logout
         </button>
       </div>

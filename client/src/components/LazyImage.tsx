@@ -41,7 +41,7 @@ const LazyImage: React.FC<{
                     {canDelete && (
                         <button
                             onClick={onDelete}
-                            className="btn btn-primary bg-red-600 hover:bg-red-700 mt-2"
+                            className="btn btn-danger mt-2"
                         >
                             Delete
                         </button>
