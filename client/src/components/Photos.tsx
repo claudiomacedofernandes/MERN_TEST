@@ -97,7 +97,7 @@ const Photos: React.FC = () => {
     <div className="card p-4">
       <h2 className="text-2xl font-semibold">Photos</h2>
       <div className="sticky top-0 z-10 bg-white p-4 -mx-4 border-b shadow-sm flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+        <div className="flex flex-wrap items-start sm:items-center gap-2 sm:gap-4">
           <button
             onClick={fetchPhotos}
             disabled={isRefreshing}
@@ -122,18 +122,22 @@ const Photos: React.FC = () => {
               </button>
             </>
           )}
-          {error && <p className="text-red-500 text-sm absolute right-4">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm sm:ml-auto w-full sm:w-auto text-left sm:text-right">
+              {error}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="space-y-4 mt-4">
         {photos.map((photo) => (
-            <LazyImage
-              photo={photo}
-              canDelete={canDeletePhoto(photo)}
-              onDelete={() => handleDelete(photo.id)}
-              openModal={openModal}
-            />
+          <LazyImage
+            photo={photo}
+            canDelete={canDeletePhoto(photo)}
+            onDelete={() => handleDelete(photo.id)}
+            openModal={openModal}
+          />
         ))}
       </div>
 
