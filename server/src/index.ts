@@ -31,7 +31,6 @@ app.use(cookieParser());
 // For now we serve from the API server, a dedicated server will allow better performance
 if (process.env.NODE_ENV === 'development') {
   const storagePath = path.join(__dirname, process.env.STORAGE_PATH || '../storage');
-  console.log(storagePath);
   app.use('/storage', express.static(storagePath, {
     setHeaders: (res, filePath) => {
       // console.log(`Serving file: ${filePath}`);

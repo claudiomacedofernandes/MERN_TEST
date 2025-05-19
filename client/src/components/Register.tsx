@@ -19,7 +19,7 @@ const Register: React.FC<{
       const { token, userid, username, userrole } = await registerUser(formData);
       login(token, userid, username, userrole);
     } catch (err) {
-      onError('Registration failed:');
+      onError('Registration failed');
     }
   };
 
