@@ -15,5 +15,6 @@ Thumbs.db
 # Env files at root (if any)
 .env
 
-#local dev utils
+#local dev
 utils
+local_deployment
