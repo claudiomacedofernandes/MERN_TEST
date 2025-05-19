@@ -16,14 +16,26 @@ export interface Stats {
 }
 
 export const getStats = async (): Promise<Stats> => {
-  const res = await axios.get(
-    API_URL,
-    { withCredentials: true }
-  );
-  
-  if (!res.data?.stats) {
-    throw new Error(res.data.message || 'Unable to get stats');
+  var error = null;
+  var data = null;
+  try {
+    const res = await axios.get(
+      API_URL,
+      { withCredentials: true }
+    );
+
+    if (!res.data?.stats) {
+      error = 'Unable to get stats';
+    } else {
+      data = res.data.stats;
+    }
+  } catch (err) {
+    error = "Exception on API request";
   }
 
-  return res.data.stats;
+  if (error) {
+    throw new Error(error);
+  }
+
+  return data;
 };

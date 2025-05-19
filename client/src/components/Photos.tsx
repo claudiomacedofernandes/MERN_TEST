@@ -17,10 +17,10 @@ const Photos: React.FC = () => {
   // Fetch photos
   const fetchPhotos = useCallback(async () => {
     try {
+      setError(null);
       setIsRefreshing(true);
       const updatedPhotos = await getPhotos();
       setPhotos(updatedPhotos);
-      setError(null);
     } catch (err) {
       setError('Failed to load photos');
     } finally {
@@ -45,11 +45,11 @@ const Photos: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
+      setError(null);
       const formData = new FormData();
       formData.append('photo', file);
       const newPhoto = await putPhoto(formData);
       if (newPhoto) setPhotos([newPhoto, ...photos]);
-      setError(null);
     } catch (err) {
       setError('Failed to upload photo');
     } finally {
@@ -60,9 +60,9 @@ const Photos: React.FC = () => {
   // Handle photo deletion
   const handleDelete = async (photoId: string) => {
     try {
+      setError(null);
       const res = await deletePhoto(photoId);
       if (res) setPhotos(photos.filter((photo) => photo.id !== photoId));
-      setError(null);
     } catch (err) {
       setError('Failed to delete photo');
     }
@@ -131,8 +131,9 @@ const Photos: React.FC = () => {
       </div>
 
       <div className="space-y-4 mt-4">
-        {photos.map((photo) => (
+        {photos.map((photo, index) => (
           <LazyImage
+            key={index}
             photo={photo}
             canDelete={canDeletePhoto(photo)}
             onDelete={() => handleDelete(photo.id)}

@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { loginUser } from '../api/auth.api';
 
-const Login: React.FC = () => {
+const Login: React.FC<{
+  onError: (error: string | null) => void;
+}> = ({ onError }) => {
   const { login } = useAuth();
   const [formusername, setFormUsername] = useState('');
   const [formpassword, setFormPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    onError(null);
     try {
       const { token, userid, username, userrole } = await loginUser({
         username: formusername,
@@ -18,7 +19,7 @@ const Login: React.FC = () => {
       });
       login(token, userid, username, userrole);
     } catch (err) {
-      setError('Invalid credentials');
+      onError('Invalid credentials');
     }
   };
 
@@ -47,7 +48,6 @@ const Login: React.FC = () => {
       <button type="submit" className="btn btn-primary w-full">
         Login
       </button>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
     </form>
   );
 };

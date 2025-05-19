@@ -15,9 +15,9 @@ const Statistics: React.FC = () => {
 
   const fetchStats = async () => {
     try {
+      setError(null);
       const data = await getStats();
       setStats(data);
-      setError(null);
     } catch (err) {
       setError('Failed to load statistics');
     }
@@ -31,7 +31,11 @@ const Statistics: React.FC = () => {
   }, []);
 
   if (error) {
-    return <p className="text-red-500">{error}</p>;
+    return (
+      <p className="text-red-500 text-sm sm:ml-auto w-full sm:w-auto text-left sm:text-right">
+        {error}
+      </p>
+    );
   }
 
   if (!stats) {

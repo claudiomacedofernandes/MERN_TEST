@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { registerUser } from '../api/auth.api';
 
-const Register: React.FC = () => {
+const Register: React.FC<{
+  onError: (error: string | null) => void;
+}> = ({ onError }) => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({ username: '', password: '', role: 'guest' });
 
@@ -13,10 +15,11 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      onError(null);
       const { token, userid, username, userrole } = await registerUser(formData);
       login(token, userid, username, userrole);
     } catch (err) {
-      console.error('Registration failed:', err);
+      onError('Registration failed:');
     }
   };
 

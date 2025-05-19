@@ -18,61 +18,97 @@ export interface AuthRequestForm {
 }
 
 export const loginUser = async (formData: AuthRequestForm): Promise<AuthResponse> => {
-  const res = await axios.post(
-    `${API_URL}/login`,
-    formData,
-    { withCredentials: true }
-  );
+  var error = null;
+  var data = null;
+  try {
+    const res = await axios.post(
+      `${API_URL}/login`,
+      formData,
+      { withCredentials: true }
+    );
 
-  if (!res.data?.user) {
-    throw new Error(res.data.message || 'Login failed');
+    if (!res.data?.user) {
+      error = 'Login failed';
+    } else {
+      data = res.data.user;
+    }
+  } catch (err) {
+    error = "Exception on API request";
   }
 
-  return res.data.user;
+  if (error) {
+    throw new Error(error);
+  }
+
+  return data;
 };
 
 export const registerUser = async (formData: AuthRequestForm): Promise<AuthResponse> => {
-  const res = await axios.post(
-    `${API_URL}/register`,
-    formData,
-    { withCredentials: true }
-  );
+  var error = null;
+  var data = null;
+  try {
+    const res = await axios.post(
+      `${API_URL}/register`,
+      formData,
+      { withCredentials: true }
+    );
 
-  if (!res.data?.user) {
-    throw new Error(res.data.message || 'Registration failed');
+    if (!res.data?.user) {
+      error = 'Registration failed';
+    } else {
+      data = res.data.user;
+    }
+
+  } catch (err) {
+    error = "Exception on API request";
   }
 
-  return res.data.user;
+  if (error) {
+    throw new Error(error);
+  }
+
+  return data;
 };
 
 export const updateUserRole = async (userrole: string | null): Promise<string> => {
-  const res = await axios.put(
-    `${API_URL}/update-role`,
-    { role: userrole },
-    { withCredentials: true }
-  );
+  var error = null;
+  var data = null;
+  try {
+    const res = await axios.put(
+      `${API_URL}/update-role`,
+      { role: userrole },
+      { withCredentials: true }
+    );
 
-  if (!res.data?.user) {
-    throw new Error(res.data.message || 'Unable to update the user role');
+    if (!res.data?.user) {
+      error = 'Unable to update the user role';
+    } else {
+      data = res.data.user.userrole;
+    }
+  } catch (err) {
+    error = "Exception on API request";
   }
 
-  return res.data.user.userrole;
+  if (error) {
+    throw new Error(error);
+  }
+
+  return data;
 };
 
-
 export const logoutUser = async (): Promise<boolean> => {
-  var res = null;
+  var error = null;
   try {
-    res = await axios.get(
+    await axios.get(
       `${API_URL}/logout`,
       { withCredentials: true }
     );
-  } catch (error) {
-    res = null
+  } catch (err) {
+    error = 'Logout failed';
   }
 
-  if (!res) {
-    throw new Error('Logout failed');
+  if (error) {
+    throw new Error(error);
   }
 
   return true;
