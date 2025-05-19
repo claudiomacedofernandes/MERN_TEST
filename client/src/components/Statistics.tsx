@@ -4,6 +4,8 @@ import { Bar } from 'react-chartjs-2';
 import { getStats, Stats } from '../api/stats.api';
 import moment from 'moment';
 
+const STATS_AUTO_REFRESH_INTERVAL = 30000;
+
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -21,9 +23,10 @@ const Statistics: React.FC = () => {
     }
   };
 
+  // Initial fetch and auto-refresh every STATS_AUTO_REFRESH_INTERVAL seconds
   useEffect(() => {
     fetchStats();
-    const interval = setInterval(fetchStats, 10000); // Poll every 10 seconds
+    const interval = setInterval(fetchStats, STATS_AUTO_REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 

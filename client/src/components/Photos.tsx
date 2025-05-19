@@ -4,6 +4,7 @@ import { USER_ROLES } from '../api/auth.api';
 import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
 import LazyImage from './LazyImage';
 
+const PHOTOS_AUTO_REFRESH_INTERVAL = 30000;
 
 const Photos: React.FC = () => {
   const { userid, username, userrole } = useAuth();
@@ -27,10 +28,10 @@ const Photos: React.FC = () => {
     }
   }, []);
 
-  // Initial fetch and auto-refresh every 30 seconds
+  // Initial fetch and auto-refresh
   useEffect(() => {
     fetchPhotos();
-    const interval = setInterval(fetchPhotos, 30000);
+    const interval = setInterval(fetchPhotos, PHOTOS_AUTO_REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [fetchPhotos]);
 
