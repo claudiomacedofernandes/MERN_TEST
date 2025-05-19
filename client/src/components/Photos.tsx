@@ -1,26 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { USER_ROLES } from '../api/auth.api';
 import { Photo, getPhotos, putPhoto, deletePhoto } from '../api/photos.api';
+import LazyImage from './LazyImage';
 
 const Photos: React.FC = () => {
   const { userid, username, userrole } = useAuth();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Fetch photos on mount
-  useEffect(() => {
-    const fetchPhotos = async () => {
-      try {
-        const updatedPhotos = await getPhotos();
-        setPhotos(updatedPhotos);
-      } catch (err) {
-        setError('Failed to load photos');
-      }
-    };
-    fetchPhotos();
+  // Fetch photos
+  const fetchPhotos = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const updatedPhotos = await getPhotos();
+      setPhotos(updatedPhotos);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load photos');
+    } finally {
+      setIsRefreshing(false);
+    }
   }, []);
+
+  // Initial fetch and auto-refresh every 30 seconds
+  useEffect(() => {
+    fetchPhotos();
+    const interval = setInterval(fetchPhotos, 30000);
+    return () => clearInterval(interval);
+  }, [fetchPhotos]);
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,13 +45,11 @@ const Photos: React.FC = () => {
       setError('Please select a file');
       return;
     }
-
     try {
       const formData = new FormData();
       formData.append('photo', file);
       const newPhoto = await putPhoto(formData);
-      if (newPhoto)
-        setPhotos([newPhoto, ...photos]);
+      if (newPhoto) setPhotos([newPhoto, ...photos]);
       setFile(null);
       setError(null);
     } catch (err) {
@@ -53,8 +61,7 @@ const Photos: React.FC = () => {
   const handleDelete = async (photoId: string) => {
     try {
       const res = await deletePhoto(photoId);
-      if (res)
-        setPhotos(photos.filter(photo => photo.id !== photoId));
+      if (res) setPhotos(photos.filter((photo) => photo.id !== photoId));
       setError(null);
     } catch (err) {
       setError('Failed to delete photo');
@@ -65,7 +72,7 @@ const Photos: React.FC = () => {
   // It is double checked in server
   const canUploadPhoto = () => {
     if (!userid || !userrole) return false;
-    return USER_ROLES.filter(role => role !== 'guest').includes(userrole||"");
+    return USER_ROLES.filter((role) => role !== 'guest').includes(userrole || '');
   };
 
   // Determine if the delete button should be enabled
@@ -79,41 +86,43 @@ const Photos: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Photos</h1>
+    <div className="card">
+      <h2 className="text-2xl font-semibold mb-4">Photos</h2>
 
-      {/* Upload Button (Hidden for Guest, Disabled for No User) */}
+      {/* Controls */}
       {canUploadPhoto() && (
-        <div>
+        <div className="mb-4 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
+            className="border p-2 rounded-md"
           />
-          <button onClick={handleUpload}>
+          <button onClick={handleUpload} className="btn btn-primary">
             Upload Photo
+          </button>
+          <button
+            onClick={fetchPhotos}
+            disabled={isRefreshing}
+            className="btn btn-secondary"
+          >
+            {isRefreshing ? 'Refreshing...' : 'Refresh Photos'}
           </button>
         </div>
       )}
 
       {/* Error Message */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {/* Photo Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+      {/* Photo Grid (Single Column) */}
+      <div className="space-y-4">
         {photos.map((photo) => (
-          <div key={photo.id} style={{ border: '1px solid #ccc', padding: '10px' }}>
-            <img src={`http://localhost:3001${photo.path}`} alt={photo.filename} style={{ maxWidth: '100%' }} />
-            <p>Uploaded by: {photo.username}</p>
-            <p>Date: {new Date(photo.uploadedAt).toLocaleDateString()}</p>
-            <button
-              onClick={() => handleDelete(photo.id)}
-              disabled={!canDeletePhoto(photo)}
-              style={{ backgroundColor: canDeletePhoto(photo) ? 'red' : 'gray', color: 'white' }}
-            >
-              Delete
-            </button>
-          </div>
+          <LazyImage
+            key={photo.id}
+            photo={photo}
+            canDelete={canDeletePhoto(photo)}
+            onDelete={() => handleDelete(photo.id)}
+          />
         ))}
       </div>
     </div>

@@ -7,7 +7,7 @@ import Session from '../models/session.model';
 import { generateToken, decodeToken, getCookieName, getCookieOptions, DecodedToken } from '../utils/tokens.utils';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     try {
         const userExists = await User.findOne({ username });
@@ -17,15 +17,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const user = await User.create({ username, role: USER_ROLE_DEFAULT, password });
+        const user = await User.create({ username, role: USER_ROLES.includes(role) ? role : USER_ROLE_DEFAULT, password });
 
         // After saving the user
         const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
         // Create session
         await Session.create({
-          userId: user._id,
-          token,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+            userId: user._id,
+            token,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
         });
         res
             .cookie(getCookieName(), token, getCookieOptions())
@@ -62,9 +62,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const token = generateToken({ userid: user._id, username: user.username, userrole: user.role });
         // Create session
         await Session.create({
-          userId: user._id,
-          token,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+            userId: user._id,
+            token,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
         });
         res
             .cookie(getCookieName(), token, getCookieOptions())

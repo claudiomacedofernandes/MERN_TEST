@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { logoutUser, updateUserRole, USER_ROLES } from '../api/auth.api';
 import { useAuth } from '../contexts/AuthContext';
 import Login from './Login';
@@ -6,7 +6,6 @@ import Register from './Register';
 
 const User: React.FC = () => {
   const { userid, username, userrole, logout, updateRole } = useAuth();
-  const [tab, setTab] = useState<'login' | 'register'>('login');
 
   const handleRoleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     try {
@@ -34,13 +33,15 @@ const User: React.FC = () => {
 
   if (userid) {
     return (
-      <div>
-        <h2>Welcome, {username}!</h2>
-        <p>Role: {userrole ? (
+      <div className="card max-w-md mx-auto">
+        <h2 className="text-2xl font-semibold mb-4">User Profile</h2>
+        <p className="mb-2">Welcome, <span className="font-medium">{username}</span>!</p>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Role:</label>
           <select
-            value={userrole}
+            value={userrole || ''}
             onChange={handleRoleChange}
-            className="border p-1 rounded"
+            className="border rounded-md p-2 w-full"
           >
             {USER_ROLES.map((role) => (
               <option key={role} value={role}>
@@ -48,27 +49,27 @@ const User: React.FC = () => {
               </option>
             ))}
           </select>
-        ) : 'N/A'}</p>
-        <button onClick={handleLogout}>Logout</button>
+        </div>
+        <button onClick={handleLogout} className="btn btn-primary bg-red-600 hover:bg-red-700">
+          Logout
+        </button>
       </div>
     );
   }
 
   return (
-    <div>
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => setTab('login')} disabled={tab === 'login'}>
-          Login
-        </button>
-        <button onClick={() => setTab('register')} disabled={tab === 'register'}>
-          Register
-        </button>
+    <div className="container">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Account</h2>
+      <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+        <div className="card flex-1">
+          <h3 className="text-xl font-medium mb-2">Login</h3>
+          <Login />
+        </div>
+        <div className="card flex-1">
+          <h3 className="text-xl font-medium mb-2">Register</h3>
+          <Register />
+        </div>
       </div>
-      {tab === 'login' ? (
-        <Login />
-      ) : (
-        <Register />
-      )}
     </div>
   );
 };

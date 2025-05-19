@@ -1,7 +1,7 @@
+import './tailwind.css'; // Import tailwind.css to include Tailwind and custom styles
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AuthProvider } from './contexts/AuthContext';
-
 import App from './App'
 
 ReactDOM.render(

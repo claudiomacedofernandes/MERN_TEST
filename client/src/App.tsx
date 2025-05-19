@@ -11,22 +11,30 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <header style={{ display: 'flex', gap: '1rem', padding: '1rem', borderBottom: '1px solid #ccc' }}>
-        <Link to="/">Photos</Link>
-        <Link to="/statistics">Statistics</Link>
-        <Link to="/user">{username ?? 'Login/Register'}</Link>
-      </header>
+      <div className="min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="bg-blue-600 text-white shadow-md">
+          <div className="container py-4 flex justify-between items-center">
+            <nav className="flex space-x-4">
+              <Link to="/photos" className="hover:text-blue-200 font-medium">Photos</Link>
+              <Link to="/stats" className="hover:text-blue-200 font-medium">Statistics</Link>
+            </nav>
+            <Link to="/user" className="font-medium hover:text-blue-200">
+              {username || 'Login/Register'}
+            </Link>
+          </div>
+        </header>
 
-      <main style={{ padding: '1rem' }}>
-        <Switch>
-          <Route exact path="/" component={Photos} />
-          <Route path="/statistics" component={Statistics} />
-          <Route path="/user" >
-            <User />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-      </main>
+        {/* Main Content */}
+        <main className="flex-grow container py-6">
+          <Switch>
+            <Route path="/photos" component={Photos} />
+            <Route path="/stats" component={Statistics} />
+            <Route path="/user" component={User} />
+            <Redirect from="/" to="/photos" />
+          </Switch>
+        </main>
+      </div>
     </Router>
   );
 };
