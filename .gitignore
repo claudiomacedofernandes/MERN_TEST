@@ -15,6 +15,30 @@ Thumbs.db
 # Env files at root (if any)
 .env
 
-#local dev
+# local dev
 local_utils/
-local_deployment/
+
+# local windows deploy builds
+deploy_local/client/node_modules/
+deploy_local/client/build*/*
+!deploy_local/client/build/.gitkeep
+deploy_local/server/node_modules/
+deploy_local/server/dist/*
+!deploy_local/server/dist/.gitkeep
+deploy_local/storage/*
+!deploy_local/storage/.gitkeep
+deploy_local/data/*
+!deploy_local/data/.gitkeep
+
+# docker deploy builds
+deploy_docker/docker-compose.exe
+deploy_docker/client/wait-for-it.sh
+deploy_docker/client/node_modules/
+deploy_docker/client/build/*
+!deploy_docker/client/build/.gitkeep
+deploy_docker/server/wait-for-it.sh
+deploy_docker/server/node_modules/
+deploy_docker/server/dist/*
+!deploy_docker/server/dist/.gitkeep
+deploy_docker/data/*
+!deploy_docker/data/.gitkeep

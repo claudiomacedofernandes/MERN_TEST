@@ -38,6 +38,7 @@
     "start": "react-scripts start",
     "start:css": "postcss src/index.css -o src/tailwind.css && react-scripts start",
     "build": "react-scripts build",
+    "build:verbose": "$env:CI='true'; npm run build",
     "build:css": "postcss src/index.css -o src/tailwind.css",
     "build:all": "postcss src/index.css -o src/tailwind.css && react-scripts build",
     "test": "react-scripts test",

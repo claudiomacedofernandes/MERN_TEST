@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo:4.0.0
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
+    command: mongod --port 27018
+    healthcheck:
+      test: ["CMD", "mongo", "--port", "27018", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - mongo
+    command: ["node", "dist/index.js"]
+    environment:
+      - NODE_ENV=production
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    command: ["node", "client.js"]
+    environment:
+      - NODE_ENV=production
+
+volumes:
+  data:
+  storage:
