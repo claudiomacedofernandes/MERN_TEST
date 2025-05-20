@@ -57,7 +57,7 @@ export const uploadPhoto = async (req: AuthenticatedRequest, res: Response): Pro
         id: photo._id,
         filename: photo.filename,
         path: photo.path,
-        useid: photo.userId,
+        userid: photo.userId,
         username: user.username,
         userrole: user.userrole,
         uploadedAt: photo.uploadedAt
@@ -77,7 +77,7 @@ export const deletePhoto = async (req: AuthenticatedRequest, res: Response): Pro
     }
 
     const photoId = req.params.id;
-    const photo = await Photo.findById(photoId).populate('userId', 'username role');
+    const photo = await Photo.findById(photoId);
     if (!photo) {
       res.status(404).json({ message: 'Photo not found' });
       return;
@@ -87,16 +87,21 @@ export const deletePhoto = async (req: AuthenticatedRequest, res: Response): Pro
     const user = req.user as DecodedToken;
     const owner = await User.findById(photo.userId);
 
-    if (!user || !owner) {
-      res.status(403).json({ message: 'Forbidden: The ser information is invalid' });
-      return;
-    }
+    if (user && owner) {
+      const userRoleIndex = USER_ROLES.indexOf(user?.userrole || USER_ROLES[USER_ROLES.length - 1]);
+      const ownerRoleIndex = USER_ROLES.indexOf(owner?.role || USER_ROLES[0]);
 
-    const userRoleIndex = USER_ROLES.indexOf(user?.userrole || USER_ROLES[USER_ROLES.length - 1]);
-    const ownerRoleIndex = USER_ROLES.indexOf(owner?.role || USER_ROLES[0]);
-
-    if ((user.userid !== owner.id && userRoleIndex >= ownerRoleIndex)) {
-      res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+      if ((user.userid !== owner.id && userRoleIndex >= ownerRoleIndex)) {
+        res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+        return;
+      }
+    } else if (user) {
+      if (!USER_ROLES.filter(role => role !== 'guest' && role !== 'user').includes(user?.userrole)) {
+        res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
+        return;
+      }
+    } else {
+      res.status(403).json({ message: 'Forbidden: The server information is invalid' });
       return;
     }
 
