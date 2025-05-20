@@ -18,10 +18,17 @@ const port = process.env.PORT || 3001;
 
 // Enable Cross-Origin Resource Sharing for API access from different domains
 app.use(cors({
-  credentials: true,
-  origin: process.env.NODE_ENV === 'production' ? `http://localhost:${port}` : true
-}
-));
+  origin: (origin, callback) => {
+    const allowedOrigins = ['http://localhost:3000', 'http://192.168.1.80:3000'];
+    if (process.env.NODE_ENV === 'development' || allowedOrigins.includes(origin || "")) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 // Parse incoming JSON request bodies for easy data handling
 app.use(express.json());
 // Parse cookies from incoming requests for authentication and session management
