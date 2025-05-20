@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { DecodedToken, decodeToken } from '../utils/tokens.utils';
-import Session from '../models/session.model';
 
 export interface AuthenticatedRequest extends Request {
   user?: DecodedToken;
