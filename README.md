@@ -72,24 +72,24 @@ This project is a minimal proof-of-concept submission for a technical challenge,
 
 ## Deployment Structure (local and docker)
 
-release/
-├── client/               # React client server
-│   ├── build/            # Built React app
-│   ├── .env              # Environment variables for client server
-│   ├── client.js         # Client server code
-│   ├── package.json      # Client dependencies
-│   └── Dockerfile        # Docker configuration for client
-├── data/                 # MongoDB data storage
-├── server/               # API server
-│   ├── dist/             # Built API server code
-│   ├── .env              # Environment variables for API server
-│   ├── package.json      # API dependencies
-│   └── Dockerfile        # Docker configuration for API
-├── storage/              # User-generated content storage
-├── docker-compose.yml    # Docker Compose configuration
-├── setup.sh              # Setup script for deployment
-├── start-all.bat         # Run the release versions locally
-└── stop-all.bat          # Stop MongoDB, server, and client
+*   release/
+    *   client/ \# React client server
+        *   build/ \# Built React app
+        *   .env \# Environment variables for client server
+        *   client.js \# Client server code
+        *   package.json \# Client dependencies
+        *   Dockerfile \# Docker configuration for client
+    *   data/ \# MongoDB data storage
+    *   server/ \# API server
+        *   dist/ \# Built API server code
+        *   .env \# Environment variables for API server
+        *   package.json \# API dependencies
+        *   Dockerfile \# Docker configuration for API
+    *   storage/ \# User-generated content storage
+    *   docker-compose.yml \# Docker Compose configuration
+    *   setup.sh \# Setup script for deployment
+    *   start-all.bat \# Run the release versions in deploy\_local
+    *   stop-all.bat \# Stop mongo, server and client
 
 ---
 
