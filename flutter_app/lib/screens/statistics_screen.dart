@@ -83,8 +83,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       padding: EdgeInsets.all(16.0),
       child: Column(
         children: [
-          SizedBox(
-            height: 400,
+          Expanded(
             child: CustomBarChart(
               values: values,
               labels: [
