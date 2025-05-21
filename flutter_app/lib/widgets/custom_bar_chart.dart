@@ -19,21 +19,23 @@ class CustomBarChart extends StatelessWidget {
     final maxValue =
         values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 1.0;
 
-    return Container(
-      padding: EdgeInsets.all(padding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: List.generate(values.length, (index) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: padding),
-            child: CustomBar(
-              value: values[index],
-              maxValue: maxValue,
-              label: labels[index],
-              height: barHeight,
-            ),
-          );
-        }),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(padding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(values.length, (index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: padding),
+              child: CustomBar(
+                value: values[index],
+                maxValue: maxValue,
+                label: labels[index],
+                height: barHeight,
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

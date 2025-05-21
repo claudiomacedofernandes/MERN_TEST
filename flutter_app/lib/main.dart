@@ -96,16 +96,49 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.photo), label: 'Photos'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Statistics'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'User'),
+      body: Column(
+        children: [
+          Container(
+            color: Theme.of(context).primaryColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(Icons.photo, 'Photos', 0),
+                _buildNavItem(Icons.bar_chart, 'Statistics', 1),
+                _buildNavItem(Icons.person, 'User', 2),
+              ],
+            ),
+          ),
+          Expanded(child: _screens[_selectedIndex]),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        color: _selectedIndex == index
+            ? Theme.of(context).primaryColorDark
+            : Colors.transparent,
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: _selectedIndex == index ? Colors.white : Colors.white70,
+            ),
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: _selectedIndex == index ? Colors.white : Colors.white70,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
