@@ -12,6 +12,7 @@ import '../config.dart';
 import '../providers/auth_provider.dart';
 import '../models/photo.dart';
 import '../models/photo_upload_task.dart';
+import '../widgets/full_screen_image_dialog.dart';
 
 class PhotosScreen extends StatefulWidget {
   @override
@@ -167,11 +168,14 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   void openModal(Photo photo) {
-    setState(() => selectedPhoto = photo);
-  }
-
-  void closeModal() {
-    setState(() => selectedPhoto = null);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => FullScreenImageDialog(
+        imageUrl: '$STORAGE_API${photo.path}',
+        onClose: () => Navigator.of(context).pop(),
+      ),
+    );
   }
 
   @override
@@ -232,19 +236,6 @@ class _PhotosScreenState extends State<PhotosScreen> {
               },
             ),
           ),
-          if (selectedPhoto != null)
-            Dialog(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.network('$STORAGE_API${selectedPhoto!.path}'),
-                  Text('Uploaded by: ${selectedPhoto!.username}'),
-                  Text(
-                      'Date: ${DateTime.parse(selectedPhoto!.uploadedAt).toLocal().toString().split('.')[0]}'),
-                  TextButton(onPressed: closeModal, child: Text('Close')),
-                ],
-              ),
-            ),
         ],
       ),
     );
