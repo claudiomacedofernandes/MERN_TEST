@@ -12,9 +12,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const API_SERVER = process.env.REACT_APP_SERVER_API || 'http://localhost:3001';
+
 // Proxy API requests
 app.use('/api', createProxyMiddleware({
-  target: 'http://localhost:3001', // Your API server
+  target: API_SERVER, // Your API server
   changeOrigin: true,
 }));
 

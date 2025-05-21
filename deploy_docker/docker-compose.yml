@@ -12,7 +12,15 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=
     command: mongod --port 27018
     healthcheck:
-      test: ["CMD", "mongo", "--port", "27018", "--eval", "db.adminCommand('ping')"]
+      test:
+        [
+          "CMD",
+          "mongo",
+          "--port",
+          "27018",
+          "--eval",
+          "db.adminCommand('ping')"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,13 +31,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
-    volumes:
-      - ./storage:/app/storage
     depends_on:
       - mongo
-    command: ["node", "dist/index.js"]
+    command: [ "node", "dist/index.js" ]
     environment:
       - NODE_ENV=production
+    volumes:
+      - ../storage:/app/storage
 
   client:
     build:
@@ -39,7 +47,7 @@ services:
       - "3000:3000"
     depends_on:
       - api
-    command: ["node", "client.js"]
+    command: [ "node", "client.js" ]
     environment:
       - NODE_ENV=production
 

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const http_proxy_middleware_1 = __importDefault(require("http-proxy-middleware"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
@@ -13,6 +14,12 @@ const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+const API_SERVER = process.env.REACT_APP_SERVER_API || 'http://localhost:3001';
+// Proxy API requests
+app.use('/api', (0, http_proxy_middleware_1.default)({
+    target: API_SERVER,
+    changeOrigin: true,
+}));
 // Serve static files from the storage folder
 // For now we serve from the API server, a dedicated server will allow
 // a performance improvement
