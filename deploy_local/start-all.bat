@@ -1,5 +1,5 @@
 @echo off
-set RETRIES=5
+set RETRIES=30
 set RETRY_TIMER=5
 set "PROJECT_ROOT=%CD%"
 
