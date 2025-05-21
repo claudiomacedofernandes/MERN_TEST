@@ -76,7 +76,22 @@ class _MainScreenState extends State<MainScreen> {
           Consumer<AuthProvider>(
             builder: (context, auth, _) => Padding(
               padding: EdgeInsets.only(right: 16),
-              child: Center(child: Text(auth.username ?? 'Guest')),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = 2; // Navigate to User page
+                    });
+                  },
+                  child: Text(
+                    auth.username ?? 'Guest',
+                    style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
