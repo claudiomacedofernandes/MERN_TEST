@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import '../config.dart';
 import '../providers/auth_provider.dart';
-
-const String SERVER_API = "http://192.168.1.101:3001";
 
 class StatisticsScreen extends StatefulWidget {
   @override
@@ -31,7 +30,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         return;
       }
       final response = await http.get(
-        Uri.parse('${SERVER_API}/api/stats'),
+        Uri.parse('$SERVER_API/api/stats'),
         headers: {'Cookie': 'token=${auth.token}'},
       );
       if (response.statusCode == 200) {
@@ -101,8 +100,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   for (int i = 0; i < 9; i++)
                     BarChartGroupData(
                       x: i,
-                      barRods: [
-                        BarChartRodData(
+                    barRods: [
+                      BarChartRodData(
                           y: [
                             stats!['photosAdded'],
                             stats!['photosDeleted'],
@@ -115,10 +114,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             stats!['totalLoggedInUsers'],
                           ][i]
                               .toDouble(),
-                          colors: [Colors.blue],
-                        ),
-                      ],
-                    ),
+                        colors: [Colors.blue],
+                      ),
+                    ],
+              ),
                 ],
               ),
             ),

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-const String SERVER_API = "http://192.168.1.101:3001";
+import '../config.dart';
 
 class AuthProvider with ChangeNotifier {
   String? _token;
@@ -37,7 +36,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('${SERVER_API}/api/auth/login'),
+      Uri.parse('$SERVER_API/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'username': username, 'password': password}),
     );
@@ -61,7 +60,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> register(String username, String password, String role) async {
     final response = await http.post(
-      Uri.parse('${SERVER_API}/api/auth/register'),
+      Uri.parse('$SERVER_API/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(
           {'username': username, 'password': password, 'role': role}),
@@ -86,7 +85,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> updateRole(String role) async {
     final response = await http.put(
-      Uri.parse('${SERVER_API}/api/auth/update-role'),
+      Uri.parse('$SERVER_API/api/auth/update-role'),
       headers: {
         'Content-Type': 'application/json',
         'Cookie': 'token=$_token',
@@ -106,7 +105,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     final response = await http.get(
-      Uri.parse('${SERVER_API}/api/auth/logout'),
+      Uri.parse('$SERVER_API/api/auth/logout'),
       headers: {'Cookie': 'token=$_token'},
     );
 

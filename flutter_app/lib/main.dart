@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'config.dart';
 import 'models/photo_upload_task.dart';
 import 'providers/auth_provider.dart';
 import 'screens/photos_screen.dart';
@@ -52,10 +53,31 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Global Photo Manager'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Global Photo Manager'),
+            if (SHOW_DEBUG_ITEMS) ...[
+              SizedBox(width: 16),
+              IconButton(
+                icon: Icon(IS_OFFLINE ? Icons.wifi_off : Icons.wifi),
+                onPressed: () {
+                  setState(() {
+                    IS_OFFLINE = !IS_OFFLINE;
+                  });
+                },
+                tooltip: IS_OFFLINE ? 'Resume Connection' : 'Simulate Offline',
+              ),
+            ],
+          ],
+        ),
+        centerTitle: true,
         actions: [
           Consumer<AuthProvider>(
-            builder: (context, auth, _) => Text(auth.username ?? 'Guest'),
+            builder: (context, auth, _) => Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(child: Text(auth.username ?? 'Guest')),
+            ),
           ),
         ],
       ),

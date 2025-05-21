@@ -8,12 +8,10 @@ import 'package:hive/hive.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import '../config.dart';
 import '../providers/auth_provider.dart';
 import '../models/photo.dart';
 import '../models/photo_upload_task.dart';
-
-const String SERVER_API = "http://192.168.1.101:3001";
-const String STORAGE_API = "http://192.168.1.101:3000";
 
 class PhotosScreen extends StatefulWidget {
   @override
@@ -41,7 +39,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
     try {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final response = await http.get(
-        Uri.parse('${SERVER_API}/api/photos'),
+        Uri.parse('$SERVER_API/api/photos'),
         headers: auth.token != null ? {'Cookie': 'token=${auth.token}'} : {},
       );
       if (response.statusCode == 200) {
@@ -68,7 +66,9 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   Future<void> uploadPhoto(XFile file) async {
-    final connectivityResult = await Connectivity().checkConnectivity();
+    final connectivityResult = IS_OFFLINE
+        ? ConnectivityResult.none
+        : await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       await box.add(PhotoUploadTask(filePath: file.path));
       setState(() => error = 'Photo queued for upload');
@@ -91,7 +91,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
       final mimeParts = mimeType.split('/');
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${SERVER_API}/api/photos/upload'),
+        Uri.parse('$SERVER_API/api/photos/upload'),
       );
       request.headers['Cookie'] = 'token=${auth.token}';
       request.files.add(
@@ -118,7 +118,9 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   Future<void> syncOfflineUploads() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
+    final connectivityResult = IS_OFFLINE
+        ? ConnectivityResult.none
+        : await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) return;
 
     final tasks = box.values.cast<PhotoUploadTask>().toList();
@@ -135,7 +137,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
     try {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final response = await http.delete(
-        Uri.parse('${SERVER_API}/api/photos/$photoId'),
+        Uri.parse('$SERVER_API/api/photos/$photoId'),
         headers: {'Cookie': 'token=${auth.token}'},
       );
       if (response.statusCode == 200) {
@@ -206,7 +208,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
                 return Card(
                   child: ListTile(
                     leading: Image.network(
-                      '${STORAGE_API}${photo.path}',
+                      '$STORAGE_API${photo.path}',
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
@@ -235,7 +237,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.network('${STORAGE_API}${selectedPhoto!.path}'),
+                  Image.network('$STORAGE_API${selectedPhoto!.path}'),
                   Text('Uploaded by: ${selectedPhoto!.username}'),
                   Text(
                       'Date: ${DateTime.parse(selectedPhoto!.uploadedAt).toLocal().toString().split('.')[0]}'),
