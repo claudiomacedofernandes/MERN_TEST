@@ -42,3 +42,7 @@ deploy_docker/server/dist/*
 !deploy_docker/server/dist/.gitkeep
 deploy_docker/data/*
 !deploy_docker/data/.gitkeep
+
+# assets like icon image for flutter_launcher_icons
+assets/
+!assets/.gitkeep
