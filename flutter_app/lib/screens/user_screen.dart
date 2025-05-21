@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../main.dart';
 
 class UserScreen extends StatefulWidget {
   @override
@@ -106,7 +107,17 @@ class _UserScreenState extends State<UserScreen> {
               try {
                 await auth.register(_usernameController.text,
                     _passwordController.text, _selectedRole!);
-                setState(() => error = null);
+                setState(() {
+                  error = null;
+                  _usernameController.clear();
+                  _passwordController.clear();
+                  _selectedRole = 'guest';
+                });
+                // Navigate to MainScreen to refresh UI with new auth state
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainScreen()),
+                );
               } catch (e) {
                 setState(() => error = 'Registration failed');
               }
