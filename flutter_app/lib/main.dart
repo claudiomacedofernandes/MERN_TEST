@@ -53,6 +53,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 48,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
