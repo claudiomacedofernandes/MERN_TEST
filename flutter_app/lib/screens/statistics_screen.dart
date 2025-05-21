@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../config.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/custom_bar_chart.dart';
 
 class StatisticsScreen extends StatefulWidget {
   @override
@@ -67,59 +67,39 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
+    final values = [
+      stats!['photosAdded'],
+      stats!['photosDeleted'],
+      stats!['currentPhotos'],
+      stats!['usersAdded'],
+      stats!['usersDeleted'],
+      stats!['currentUsers'],
+      stats!['totalLogins'],
+      stats!['totalLogouts'],
+      stats!['totalLoggedInUsers'],
+    ].map((e) => e.toDouble()).toList();
+
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
         children: [
           SizedBox(
-            height: 300,
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  leftTitles: SideTitles(showTitles: true),
-                  bottomTitles: SideTitles(
-                    showTitles: true,
-                    getTitles: (value) {
-                      const titles = [
-                        'Photos Added',
-                        'Photos Deleted',
-                        'Current Photos',
-                        'Users Added',
-                        'Users Deleted',
-                        'Current Users',
-                        'Total Logins',
-                        'Total Logouts',
-                        'Logged In Users',
-                      ];
-                      return titles[value.toInt()];
-                    },
-                  ),
-                ),
-                borderData: FlBorderData(show: true),
-                barGroups: [
-                  for (int i = 0; i < 9; i++)
-                    BarChartGroupData(
-                      x: i,
-                    barRods: [
-                      BarChartRodData(
-                          y: [
-                            stats!['photosAdded'],
-                            stats!['photosDeleted'],
-                            stats!['currentPhotos'],
-                            stats!['usersAdded'],
-                            stats!['usersDeleted'],
-                            stats!['currentUsers'],
-                            stats!['totalLogins'],
-                            stats!['totalLogouts'],
-                            stats!['totalLoggedInUsers'],
-                          ][i]
-                              .toDouble(),
-                        colors: [Colors.blue],
-                      ),
-                    ],
-              ),
-                ],
-              ),
+            height: 400,
+            child: CustomBarChart(
+              values: values,
+              labels: [
+                'Photos Added',
+                'Photos Deleted',
+                'Current Photos',
+                'Users Added',
+                'Users Deleted',
+                'Current Users',
+                'Total Logins',
+                'Total Logouts',
+                'Logged In Users',
+              ],
+              barHeight: 35.0,
+              padding: 8.0,
             ),
           ),
           SizedBox(height: 16),
