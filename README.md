@@ -1,4 +1,4 @@
-# Global Photo Manager – MVP Challenge Submission
+# Global Photo Manager – MVP | POC
 
 This project is a minimal proof-of-concept submission for a technical challenge, consisting of:
 
