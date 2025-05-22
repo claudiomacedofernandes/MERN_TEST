@@ -46,9 +46,11 @@ This project is a minimal proof-of-concept submission for a technical challenge,
 ## Prerequisites
 
 - **Node.js**: v13.14.0  
-- **MongoDB**: v4.0.0  
+- **MongoDB**: v4.0.0 
+- **React**: v6.13.1 
+- **Flutter**: v2.2.3 
+- **Typescript**: v3.7.5
 - **Docker**: Installed for optional containerized deployment  
-- **Project Files**: Ensure all files in the `release/` directory are present, including `.env` files configured with correct settings (e.g., MongoDB URI, API/client ports)
 
 ---
 
@@ -70,35 +72,43 @@ This project is a minimal proof-of-concept submission for a technical challenge,
 
 ---
 
-## Deployment Structure (local and docker)
+## Deployment Structure API and React (local and docker)
 
 *   release/
     *   client/ \# React client server
         *   build/ \# Built React app
         *   .env \# Environment variables for client server
-        *   client.js \# Client server code
+        *   client.js \# Client server code (built in deploy_local with npm run start. code in deploy_local/src/index.ts)
         *   package.json \# Client dependencies
-        *   Dockerfile \# Docker configuration for client
-    *   data/ \# MongoDB data storage
+        *   Dockerfile \# Docker configuration for client (in deploy_doker)
+    *   data/ \# MongoDB data storage - empty
     *   server/ \# API server
         *   dist/ \# Built API server code
         *   .env \# Environment variables for API server
         *   package.json \# API dependencies
-        *   Dockerfile \# Docker configuration for API
-    *   storage/ \# User-generated content storage
-    *   docker-compose.yml \# Docker Compose configuration
-    *   setup.sh \# Setup script for deployment
-    *   start-all.bat \# Run the release versions in deploy\_local
-    *   stop-all.bat \# Stop mongo, server and client
+        *   Dockerfile \# Docker configuration for API (in deploy_doker)
+    *   storage/ \# User-generated content storagee - empty
+    *   docker-compose.yml \# Docker Compose configuration (in deploy_doker)
+    *   setup.sh \# Setup script for deployment (in deploy_doker)
+    *   start-all.bat \# Run the release versions (in deploy_local)
+    *   stop-all.bat \# Stop mongo, server and client (in deploy_local)
 
 ---
 
-## Deployment Structure (local and docker)
+## Deployment Structure API and React  (local and docker)
 1. Build both the server and the client.
-2. Copy the build outputs into the appropriate folders inside the `release/` directory.
+2. Copy the build outputs into the appropriate folders (client/build, sever/build) inside the `release/` directory.
 3. Run `start-all.bat` to launch the project locally, or:
    - Use `setup.sh` to build and run Docker containers via Docker Compose.
 
+---
+
+## Deployment Structure Flutter
+1. flutter pub get
+2. flutter pub get
+3. flutter pub run flutter_launcher_icons:main
+4. flutter build apk --release
+5. flutter install (for connected device testing)
 ---
 
 # API Documentation
