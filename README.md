@@ -114,7 +114,7 @@ This project is a minimal proof-of-concept submission for a technical challenge,
 # API Documentation
 The Global Photo Manager API provides endpoints for user authentication, photo management, and statistics retrieval. All endpoints are prefixed with /api and require appropriate authentication and role-based access control (RBAC). The API uses JWT tokens stored in HTTP-only cookies for authentication.
 # Base URL
-http://localhost:3001/api
+http://[Host IP / DN]:3001/api
 # Authentication Endpoints
 POST /auth/register
 Registers a new user.
