@@ -11,6 +11,7 @@ COPY build ./build
 COPY client.js .
 COPY .env .
 COPY wait-for-it.sh .
+RUN mkdir -p /app/logs && chmod -R 777 /app/logs
 
 # Expose port 3000
 EXPOSE 3000

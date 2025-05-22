@@ -38,6 +38,7 @@ services:
       - NODE_ENV=production
     volumes:
       - ../storage:/app/storage
+      - ./logs:/app/logs
 
   client:
     build:
@@ -50,6 +51,8 @@ services:
     command: [ "node", "client.js" ]
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./logs:/app/logs
 
 volumes:
   data:

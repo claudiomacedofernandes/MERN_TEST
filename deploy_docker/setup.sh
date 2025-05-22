@@ -53,34 +53,9 @@ cd ..
 echo "Setting permissions..."
 chmod -R 777 data storage
 
-# Add wait-for-it.sh to server and client
-echo "Downloading wait-for-it.sh..."
-curl -o server/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-curl -o client/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-chmod +x server/wait-for-it.sh client/wait-for-it.sh
-
 # Start services
 echo "Starting services with docker-compose..."
 docker-compose up -d
-
-# Wait for services to be ready
-echo "Waiting for MongoDB on port 27018..."
-until docker-compose exec -T mongo mongo --port 27018 --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
-    sleep 1
-done
-echo "MongoDB is up."
-
-echo "Waiting for API server on port 3001..."
-until curl -s http://localhost:3001 > /dev/null; do
-    sleep 1
-done
-echo "API server is up."
-
-echo "Waiting for client server on port 3000..."
-until curl -s http://localhost:3000 > /dev/null; do
-    sleep 1
-done
-echo "Client server is up."
 
 # Get the IP address
 ip=$(docker-machine ip default 2>/dev/null || echo "localhost")

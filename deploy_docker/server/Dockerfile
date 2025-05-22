@@ -10,6 +10,7 @@ RUN npm install --production
 COPY dist ./dist
 COPY .env .
 COPY wait-for-it.sh .
+RUN mkdir -p /app/logs && chmod -R 777 /app/logs
 
 # Expose port 3001
 EXPOSE 3001

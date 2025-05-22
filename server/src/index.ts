@@ -19,7 +19,7 @@ const port = process.env.PORT || 3001;
 // Enable Cross-Origin Resource Sharing for API access from different domains
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = ['http://localhost:3000', 'http://api:3000', 'http://client:3000'];
+    const allowedOrigins = ['http://localhost:3000', 'http://api:3001', 'http://client:3000'];
     if (process.env.NODE_ENV === 'development' || allowedOrigins.includes(origin || "")) {
       callback(null, true);
     } else {
