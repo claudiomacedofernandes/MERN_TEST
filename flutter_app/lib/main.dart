@@ -61,13 +61,17 @@ class _MainScreenState extends State<MainScreen> {
             if (SHOW_DEBUG_ITEMS) ...[
               SizedBox(width: 16),
               IconButton(
-                icon: Icon(IS_OFFLINE ? Icons.wifi_off : Icons.wifi),
+                icon: ValueListenableBuilder<bool>(
+                  valueListenable: IS_OFFLINE,
+                  builder: (context, offline, _) {
+                    return Icon(offline ? Icons.wifi_off : Icons.wifi);
+                  },
+                ),
                 onPressed: () {
-                  setState(() {
-                    IS_OFFLINE = !IS_OFFLINE;
-                  });
+                  IS_OFFLINE.value = !IS_OFFLINE.value;
                 },
-                tooltip: IS_OFFLINE ? 'Resume Connection' : 'Simulate Offline',
+                tooltip:
+                    IS_OFFLINE.value ? 'Resume Connection' : 'Simulate Offline',
               ),
             ],
           ],

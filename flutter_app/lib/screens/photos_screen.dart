@@ -32,6 +32,13 @@ class _PhotosScreenState extends State<PhotosScreen> {
     super.initState();
     fetchPhotos();
     syncOfflineUploads();
+
+    IS_OFFLINE.addListener(() {
+      if (!IS_OFFLINE.value) {
+        syncOfflineUploads();
+      }
+    });
+
     Future.delayed(Duration(seconds: 30), autoRefresh);
   }
 
@@ -67,7 +74,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   Future<void> uploadPhoto(XFile file) async {
-    final connectivityResult = IS_OFFLINE
+    final connectivityResult = IS_OFFLINE.value
         ? ConnectivityResult.none
         : await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
@@ -119,7 +126,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   Future<void> syncOfflineUploads() async {
-    final connectivityResult = IS_OFFLINE
+    final connectivityResult = IS_OFFLINE.value
         ? ConnectivityResult.none
         : await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) return;
